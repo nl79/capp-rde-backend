@@ -2,9 +2,17 @@
 
     objRequest = GetPageContext().GetRequest(); 
     strUrl = objRequest.GetRequestUrl(); 
+    //writedump(strUrl.toString());
+   
+    /*
+     *Parse the request URI and load the appropriate
+     *Route.
+     */
+   
+    router = new components.Router('route', 'action');
     
-    writedump(strUrl.toString()); 
-
+    WriteOutput(router.getAction()); 
+    
     var = 'hello'; 
     writedump('hello');
     writedump(getMetadata(var).getName());
@@ -23,6 +31,7 @@
 	    writedump(qryRes.getResult(), false); // dump result
 	*/
 	
-    writedump(cgi); 
+    writedump(cgi);
+    
 
 </cfscript> 
