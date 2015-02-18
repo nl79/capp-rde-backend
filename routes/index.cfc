@@ -1,23 +1,17 @@
 <cfscript>
 
 component Index
+	extends="_base_route"
 	output="false"
 	{
         
-	 
-        
-        Index function init() {
-            
-            return(this); 
-        }
-        
         function actionIndex() {
         
-            writedump('here'); 
+            writedump('here_index_index'); 
             
-            session = GetPageContext().GetSession(); 
+             
             //session.putValue('count', 1343); 
-            writedump(session.getValue('count'));
+            writedump(super.getSession().getValue('count'));
         }
         
         function actionDefault() {

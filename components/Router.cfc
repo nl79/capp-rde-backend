@@ -25,25 +25,29 @@ component Router
 	}
         
         function getRoute() {
-            return this.route; 
+		
+		return this.route; 
         }
         
         function getAction() {
-            return this.action; 
+		
+		return this.action; 
         }
 	
 	function getNodes() {
+		
 		return this.nodes; 
 	}
 	
 	function loadRoute() {
+		
 		/*
 		 * Create a route object and call the action method if exists.
 		 */
 		var routePath = "routes." & this.route;
 		
 		try { 
-			var route = CreateObject("component", routePath);
+			var route = CreateObject("component", routePath).init();
 			
 			/*
 			 * build a methodName string based on the method supplied. 

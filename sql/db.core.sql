@@ -8,10 +8,6 @@ Drop database rde_survey;
 CREATE database rde_survey; 
 USE rde_survey; 
  
-CREATE TABLE user_table(
-entity_id	int		not null	PRIMARY KEY, 
-
-); 
 
 CREATE TABLE question_type (
 	entity_id	int		not null	PRIMARY KEY, 
@@ -36,6 +32,12 @@ CREATE TABLE survey_table(
 	entity_id	int	not null	PRIMARY KEY, 
 	name		char(50)		not null, 
 	[description]	char(150)	null
+); 
+
+CREATE TABLE survey_code_table(
+        entity_id   int             not null	PRIMARY KEY,
+        s_id        int             not null        FOREIGN KEY REFERENCES survey_table(entity_id)
+
 ); 
 
 CREATE TABLE survey_question_table(

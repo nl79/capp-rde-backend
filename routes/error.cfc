@@ -2,6 +2,7 @@
 
 component Error
 	output="false"
+	extends="_base_route"
 	{
         
 	 
