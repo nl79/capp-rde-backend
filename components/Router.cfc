@@ -16,13 +16,11 @@ component Router
 		 *if a value is not present, set it to 'index' as default. 
 		 */
 		 
-		this.route = ArrayLen(this.nodes) > 1 ? this.nodes[1] : "index"; 
+		this.route = ArrayLen(this.nodes) >= 1 ? this.nodes[1] : "index"; 
 	    
-		this.action = ArrayLen(this.nodes) > 2 ? this.nodes[2] : "index";     
+		this.action = ArrayLen(this.nodes) >= 2 ? this.nodes[2] : "index";     
 	    
-	     
-        
-            return(this);
+		return(this);
 	    
 	}
         
@@ -44,9 +42,32 @@ component Router
 		 */
 		var routePath = "routes." & this.route;
 		
-		var route = CreateObject("component", routePath);
+		try { 
+			var route = CreateObject("component", routePath);
+			
+			/*
+			 * build a methodName string based on the method supplied. 
+			 * check if action exists call the method
+			 */
+			
+			var methodName = "action" & this.action;
+					
+			if(StructKeyExists(route, methodName)) {
+				
+				/* get the method reference */
+				var method = route[methodName];
+				
+				/* call the method */
+				method();  
+			}
+ 
+		} catch (any e) {
 		
-		route.test();  
+			/*
+			 * create an error object and display
+			 */
+			writedump(e.message); 
+		}
 		
 	}
 }

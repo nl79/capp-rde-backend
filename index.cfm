@@ -1,4 +1,8 @@
 <cfscript>
+    This.sessionManagement="Yes";
+    
+    writedump(FORM);
+    //session = GetPageContext().GetSession(); 
 
     objRequest = GetPageContext().GetRequest(); 
     strUrl = objRequest.GetRequestUrl(); 
@@ -14,11 +18,15 @@
      */
     nodes = path.split('/');
     
+    //If the path_info and script name are the same, the user requested the root file.
+    if(compare(cgi.PATH_INFO, cgi.SCRIPT_NAME) == 0) {
+        nodes = []; 
+    }
+    
     /*
      *Parse the request URI and load the appropriate
      *Route.
      */
-   
     router = new components.Router(nodes);
     
     router.loadRoute();  
