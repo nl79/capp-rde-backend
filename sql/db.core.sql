@@ -1,5 +1,5 @@
-Drop database rde_survey; 
-CREATE database rde_survey; 
+-- Drop database rde_survey; 
+-- CREATE database rde_survey; 
 
 drop table user_table; 
 CREATE TABLE user_table(

@@ -3,19 +3,28 @@
     objRequest = GetPageContext().GetRequest(); 
     strUrl = objRequest.GetRequestUrl(); 
     //writedump(strUrl.toString());
-   
+    
+    /*
+     *extract the path_info and remove the first '/' from the string
+     */
+    path = RemoveChars(cgi.PATH_INFO, 1, 1);
+    
+    /*
+     *split the string on '/' into nodes. 
+     */
+    nodes = path.split('/');
+    
     /*
      *Parse the request URI and load the appropriate
      *Route.
      */
    
-    router = new components.Router('route', 'action');
+    router = new components.Router(nodes);
     
-    WriteOutput(router.getAction()); 
+    router.loadRoute();  
+     
     
-    var = 'hello'; 
-    writedump('hello');
-    writedump(getMetadata(var).getName());
+    
     
 	queryService = new Query(); 
 	
