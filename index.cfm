@@ -37,8 +37,10 @@
 	queryService = new Query(); 
 	
 	queryService.setDatasource("rde_survey");
-	queryService.setSQL('select * from user_table');
-	result = queryService.execute(); 
+	queryService.setSQL('select * from question_table');
+	result = queryService.execute();
+        
+        writedump(result); 
 	/*
 	yQry = new Query(); // new query object     
 	    myQry.setSQL("select bookid, title, genre from app.books where bookid = :bookid"); //set query
