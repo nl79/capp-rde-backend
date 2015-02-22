@@ -20,7 +20,15 @@
     
     //If the path_info and script name are the same, the user requested the root file.
     if(compare(cgi.PATH_INFO, cgi.SCRIPT_NAME) == 0) {
-        nodes = []; 
+        nodes = [];
+        
+        /*
+         *append a default route: survey
+         *Action: login
+         */
+        ArrayAppend(nodes, 'survey');
+        ArrayAppend(nodes, 'login'); 
+        
     }
     
     /*
@@ -30,7 +38,8 @@
     router = new components.Router(nodes);
     
     router.loadRoute();  
-     
+    exit;
+    
     
     
     
@@ -40,7 +49,8 @@
 	queryService.setSQL('select * from question_table');
 	result = queryService.execute();
         
-        writedump(result); 
+        //writedump(serializeJson(result.getResult()));
+        writedump(result.getResult()); 
 	/*
 	yQry = new Query(); // new query object     
 	    myQry.setSQL("select bookid, title, genre from app.books where bookid = :bookid"); //set query

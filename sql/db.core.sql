@@ -40,8 +40,10 @@ CREATE TABLE survey_table(
 	[description]	char(150)	null
 ); 
 
+-- Survey code table: stores the survey code and associted survey id. 
 CREATE TABLE survey_code_table(
         entity_id   int             not null	IDENTITY(1,1) PRIMARY KEY,
+		s_code		char(8)			not null, 
         s_id        int             not null        FOREIGN KEY REFERENCES survey_table(entity_id)
 
 ); 
@@ -81,3 +83,10 @@ VALUES('Access to Care: A patient was unable to get an appointment within 48 hou
 ('How Many cigarettes does the patient smoke per day', 3, null, 1), 
 ('What Fruit to you like', 1, 'apple|bannana|peach|berries|pizza|I dont like Any', null); 
 
+-- Link the questions to the survey.
+INSERT INTO survey_question_table (s_id, q_id)
+VALUES(1,1),(1,2),(1,3),(1,4); 
+
+-- Survey code table link - the survey code will be generated automatically. 
+INSERT INTO survey_code_table (s_code, s_id) 
+VALUES('testsurv', 1); 

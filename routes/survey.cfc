@@ -19,9 +19,22 @@ component Survey
 	 */ 
         
         function actionLogin() {
+	    writedump("survey/login");
+	    
+	    /* get the session object */
+	    var sess = super.getSession();
+	    
+	    /* get the request object */
+	    var req = super.getRequest();
+	    
+	    writedump(req.isGet()); 
+	    
+	    writedump(cgi);
+	    
             /*
 	     *validate the users survey code
 	     */
+	    
 	    
 	    /*
 	     *store the logged in status in the session.
@@ -37,6 +50,8 @@ component Survey
 	 *survey code. 
 	 */ 
 	function actionLoad() {
+	    var sess = super.getSession();
+	    
 	    /*
 	     *check if the the following IDS are set:
 	     *-survey code: to make sure the current user is viewing allowable survey.

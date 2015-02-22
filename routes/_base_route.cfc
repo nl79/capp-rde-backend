@@ -18,6 +18,13 @@ component _base_route
 	function getSession() {
 	    return GetPageContext().GetSession(); 
 	}
+	
+	/*
+	 *@method: getRequest() - Build a request componenet and return a reference
+	 */
+	function getRequest() {
+	    return new components.Request(); 
+	}
         
 }
 
