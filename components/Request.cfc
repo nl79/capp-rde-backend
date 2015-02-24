@@ -76,11 +76,11 @@ component Request
 		if(isDefined('key') && Compare(getMetadata(key).getName(), 'java.lang.String') == 0) {
 			
 			//check if the key is set in the params structure.
-			return StructKeyExists(this.params, key) ? this.params[key] : null; 
+			return StructKeyExists(this.params, key) ? this.params[key] : ''; 
 		}
 		
 		//return null by default. 
-		return null; 
+		return ''; 
 	}
 	
 	function getMethod() {
