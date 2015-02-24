@@ -19,7 +19,6 @@ component Survey
 	 */ 
         
         function actionLogin() {
-	    writedump("survey/login");
 	    
 	    /* get the session object */
 	    var sess = super.getSession();
@@ -27,7 +26,9 @@ component Survey
 	    /* get the request object */
 	    var req = super.getRequest();
 	    
-	    writedump(req.isGet()); 
+	    
+	    
+	    writedump(req.getData('q_code')); 
 	    
 	    writedump(cgi);
 	    
