@@ -9,17 +9,36 @@ component Survey
 	    
 	    writedump('survey-index');
 	    
-	    /*load the initial questions.
-	     *if questions are saved, load the last question with out an answer.
-	     */
+	    var sess = super.getSession(); 
 	    
 	    //run the validation method to redirect to the login
 	    //page if the user is not logged in. 
 	    super.userValid();
 	    
 	    
+	    /*
+	     *get the survey assocciated with the current
+	     *survey code.
+	     */
+	    
+	    var s_id = sess.getValue('s_id'); 
 	    
 	    
+	    /*
+	     *return a list of all the question IDs assocciatedi
+	     *with the current survey. 
+	     */
+	    
+	    //query the database
+	    var q = new Query();
+	    
+	    q.setDatasource("rde_survey");
+	    q.setSQL('SELECT t1.*, t2.* FROM survey_question_table as t1, question_table as t2 WHERE t1.s_id= :s_id AND t2.entity_id = t1.q_id');
+	    q.addParam(name='s_id', value=s_id,CFSQLTYPE="CF_SQL_INT"); 
+		result = q.execute().getResult(); 
+	    
+	    
+	    writedump(result); 
 	    
         }
         
@@ -56,7 +75,12 @@ component Survey
 	     *otherwise a question can be loaded from a different survey based on its ID.
 	     *-terms of service signed?
 	     */
+	    
+	    //get the question id from the request
+	    
 	}
+	
+	
 	       
 }
 
