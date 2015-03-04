@@ -4,7 +4,7 @@ component Request
 	output="false"
 	{
 		
-	property params; 
+	property struct params; 
         
         Request function init(nodes) {
 		
@@ -14,9 +14,13 @@ component Request
 		 *if 'post', set the args object to point to the form object.
 		 */
 		
-		if(this.isPost == true) {
-			this.params = form; 
+		if(this.isPost() == true) {
+			
+			this.params = form;
+			
 		} else if(this.isGet() == true) {
+			
+			
 			this.params = this.parseQuery();
 		}
 		

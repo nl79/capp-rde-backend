@@ -29,9 +29,10 @@ CREATE TABLE survey_table(
 -- Survey code table: stores the survey code and associted survey id. 
 CREATE TABLE survey_code_table(
     entity_id       int             not null	IDENTITY(1,1) PRIMARY KEY,
-	s_code			char(8)			not null, 
+    s_code			char(8)			not null, 
     s_id            int             not null        FOREIGN KEY REFERENCES survey_table(entity_id),
     tos             int             null		-- a flag that records if terms of service was accepted.
+    [last]          int             not null        default 1   --the last question in the list the user answered. 
 ); 
 
 CREATE TABLE question_table(

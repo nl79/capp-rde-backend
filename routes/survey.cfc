@@ -33,12 +33,44 @@ component Survey
 	    var q = new Query();
 	    
 	    q.setDatasource("rde_survey");
-	    q.setSQL('SELECT t1.*, t2.* FROM survey_question_table as t1, question_table as t2 WHERE t1.s_id= :s_id AND t2.entity_id = t1.q_id');
+	    
+	    
+	    var sql = 'SELECT t1.*, t2.*, t3.[type] ' &
+			' FROM survey_question_table as t1, question_table as t2, question_type as t3 ' &
+			' WHERE t1.s_id= :s_id AND t2.entity_id = t1.q_id and t3.entity_id = t2.q_type '; 
+	    
+	    q.setSQL(sql);
+	    
 	    q.addParam(name='s_id', value=s_id,CFSQLTYPE="CF_SQL_INT"); 
 		result = q.execute().getResult(); 
 	    
-	    
-	    writedump(result); 
+	    /* check that the result is not empty, and build a valid structure */
+	    if(result.recordcount > 0) {
+		//create a collection structure. 
+		var collection = StructNew();
+		
+		//extract the columns and split them into an array. 
+		var cols = result.ColumnList.split(','); 
+		writedump(cols);
+		
+		//loop through each result.
+		for(var i = 1; i <= result.recordcount; i++) {
+		    var row = StructNew();
+		    
+		    for(field in cols) {
+			row[field] = result[field][i]; 
+		    
+		    
+		    }
+		    collection[result['entity_id'][i]] = row; 
+		    //writedump(result[i]); 
+		}
+		
+		writedump(SerializeJSON(collection));
+		
+	    }
+	     
+	    //writedump(SerializeJSON(result)); 
 	    
         }
         

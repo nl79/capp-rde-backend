@@ -6,12 +6,13 @@ component Account
 	{
          
         function actionIndex() {
-	    writedump('account-index'); 
+	    //writedump('account-index'); 
 	    /*
 	     *if the index action is called.
 	     *redirect to the login page.
 	     */
 	    
+	    include "/index.html"; 
 	    
 	     
         
@@ -38,7 +39,6 @@ component Account
 	    
 	    //get the survey code. 
 	    var s_code = req.getData('s_code'); 
-	    
 	    
 	    //get the terms of service status
 	    var tos = req.getData('tos'); 
