@@ -45,8 +45,9 @@ component Router
 		 * Create a route object and call the action method if exists.
 		 */
 		var routePath = "routes." & this.route;
-		
-		try { 
+	
+		try {
+			
 			var route = CreateObject("component", routePath).init();
 			
 			/*
@@ -61,12 +62,13 @@ component Router
 				/* get the method reference */
 				var method = route[methodName];
 				
+
 				/* call the method */
 				method();  
 			}
  
 		} catch (any e) {
-		
+			
 			/*
 			 * create an error object and display
 			 */

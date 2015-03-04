@@ -26,7 +26,7 @@
          *append a default route: survey
          *Action: login
          */
-        ArrayAppend(nodes, 'survey');
+        ArrayAppend(nodes, 'account');
         ArrayAppend(nodes, 'login'); 
         
     }
@@ -35,6 +35,7 @@
      *Parse the request URI and load the appropriate
      *Route.
      */
+    
     router = new components.Router(nodes);
     
     router.loadRoute();  

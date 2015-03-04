@@ -15,45 +15,46 @@ CREATE TABLE question_type (
 
 -- type of the answer permitted. EX: int, float, string. 
 CREATE TABLE answer_type (
-	entity_id int	not null IDENTITY(1,1)	PRIMARY KEY, 
-	[type]		char(7)	not null,
+	entity_id		int	not null IDENTITY(1,1)	PRIMARY KEY, 
+	[type]			char(7)	not null,
 );
 
 -- Survey table
 CREATE TABLE survey_table(
-	entity_id	int	        not null IDENTITY(1,1)	PRIMARY KEY, 
-	name		char(50)	not null, 
+	entity_id		int	        not null IDENTITY(1,1)	PRIMARY KEY, 
+	name			char(50)	not null, 
 	[description]	char(150)	null
 ); 
 
 -- Survey code table: stores the survey code and associted survey id. 
 CREATE TABLE survey_code_table(
-        entity_id       int             not null	IDENTITY(1,1) PRIMARY KEY,
-		s_code		char(8)		not null, 
-        s_id            int             not null        FOREIGN KEY REFERENCES survey_table(entity_id)
+    entity_id       int             not null	IDENTITY(1,1) PRIMARY KEY,
+	s_code			char(8)			not null, 
+    s_id            int             not null        FOREIGN KEY REFERENCES survey_table(entity_id),
+    tos             int             null		-- a flag that records if terms of service was accepted.
 ); 
 
 CREATE TABLE question_table(
-	entity_id	int	not null	IDENTITY(1,1)	PRIMARY KEY, 
-	question	text	not null, 
-	q_type		int     not null    FOREIGN KEY REFERENCES question_type(entity_id),	-- controls if the questions are radio buttons or checkboxes
-	options		char	(150)	    null,	-- Answers options, delimited by the '|' simbol. 
-	a_type		int     null        FOREIGN KEY REFERENCES answer_type(entity_id),
+	entity_id	int				not null	IDENTITY(1,1)	PRIMARY KEY, 
+	question	text			not null, 
+	q_type		int				not null    FOREIGN KEY REFERENCES question_type(entity_id),	-- controls if the questions are radio buttons or checkboxes
+	options		char(150)	    null,	-- Answers options, delimited by the '|' simbol. 
+	a_type		int				null        FOREIGN KEY REFERENCES answer_type(entity_id),
 );
 
 -- q_id - question id that the answer is assocciated with.
 -- s_code_id - the survey code id the answer is assoccited with. (used for assocciting answer with individual takers). 
 CREATE TABLE answer_table(
-	entity_id	int not null	IDENTITY(1,1)	PRIMARY KEY, 
-	q_id		int	        not null	FOREIGN KEY REFERENCES question_table(entity_id),
-    s_code_id       int             not null        FOREIGN KEY REFERENCES survey_code_table(entity_id),
+	entity_id	int					not null		IDENTITY(1,1)	PRIMARY KEY, 
+	q_id		int					not null		FOREIGN KEY REFERENCES question_table(entity_id),
+        s_code_id   int					not null        FOREIGN KEY REFERENCES survey_code_table(entity_id),
 	value		varchar(150)		not null 
 ); 
 
 
 CREATE TABLE survey_question_table(
 	s_id		int     not null FOREIGN KEY REFERENCES survey_table(entity_id), 
-	q_id		int	not null FOREIGN KEY REFERENCES question_table(entity_id), 
+	q_id		int		not null FOREIGN KEY REFERENCES question_table(entity_id), 
 ); 
 
 -- Test Data
@@ -91,5 +92,5 @@ INSERT INTO survey_question_table (s_id, q_id)
 VALUES(1,1),(1,2),(1,3),(1,4); 
 
 -- Survey code table link - the survey code will be generated automatically. 
-INSERT INTO survey_code_table (s_code, s_id) 
-VALUES('testsurv', 1); 
+INSERT INTO survey_code_table (s_code, s_id, tos) 
+VALUES('testsurv', 1, null); 

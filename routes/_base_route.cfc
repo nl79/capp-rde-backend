@@ -25,7 +25,29 @@ component _base_route
 	function getRequest() {
 	    return new components.Request(); 
 	}
-        
+	
+	/*
+	 *@method: userValid() - checks if the user data is valid and the user is logged in.
+	 */
+	function userValid() {
+	        
+	    var sess = GetPageContext().GetSession();;
+	    
+	    
+	    flag = sess.getValue('valid');
+	    
+	    if(isDefined("flag") && compare('true', flag) == 0) {
+		
+		return true; 
+	    } else {
+		
+		//redirect to the login page.
+		location('/account/login');
+		exit;
+		
+	    }
+	    
+	} 
 }
 
 </cfscript>
