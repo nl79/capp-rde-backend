@@ -12,7 +12,7 @@ component Account
 	     *redirect to the login page.
 	     */
 	    
-	    include "/index.html"; 
+	    include "/public/index.html"; 
 	    
 	     
         
@@ -28,8 +28,7 @@ component Account
 	 */ 
         
         function actionLogin() {
-	    writedump('account-here');
-	    
+
 	    /* get the session object */
 	    var sess = super.getSession();
 	    

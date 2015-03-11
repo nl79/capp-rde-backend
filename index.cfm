@@ -27,7 +27,7 @@
          *Action: login
          */
         ArrayAppend(nodes, 'account');
-        ArrayAppend(nodes, 'login'); 
+        ArrayAppend(nodes, 'index'); 
         
     }
     
