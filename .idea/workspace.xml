@@ -3,10 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a9e5cc34-9490-4b82-9476-028ea51630aa" name="Default" comment="">
       <change type="DELETED" beforePath="C:\Users\nazar\Git\capp-rde-backend\index.html" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/account.cfc" afterPath="$PROJECT_DIR$/routes/account.cfc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sql/db.core.sql" afterPath="$PROJECT_DIR$/sql/db.core.sql" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.cfm" afterPath="$PROJECT_DIR$/index.cfm" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/survey.cfc" afterPath="$PROJECT_DIR$/routes/survey.cfc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="capp-rde-backend.iws" />
@@ -45,7 +42,7 @@
       <file leaf-file-name="survey.cfc" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/routes/survey.cfc">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.38998836" vertical-offset="4391" max-vertical-offset="6816">
+            <state vertical-scroll-proportion="-0.110593714" vertical-offset="4151" max-vertical-offset="6816">
               <caret line="169" column="0" selection-start-line="169" selection-start-column="0" selection-end-line="169" selection-end-column="0" />
               <folding />
             </state>
@@ -525,16 +522,16 @@
       <workItem from="1426799805440" duration="3483000" />
       <workItem from="1426805211188" duration="18422000" />
       <workItem from="1426864280437" duration="182000" />
-      <workItem from="1426864756295" duration="4982000" />
+      <workItem from="1426864756295" duration="5570000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="27069000" />
+    <option name="totallyTimeSpent" value="27657000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1591" y="-9" width="1938" height="1098" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -798,7 +795,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/survey.cfc">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.38998836" vertical-offset="4391" max-vertical-offset="6816">
+        <state vertical-scroll-proportion="-0.110593714" vertical-offset="4151" max-vertical-offset="6816">
           <caret line="169" column="0" selection-start-line="169" selection-start-column="0" selection-end-line="169" selection-end-column="0" />
           <folding />
         </state>
