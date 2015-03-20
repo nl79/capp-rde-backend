@@ -1,25 +1,18 @@
 
-$(function() {
-    
-    $('#btn-login').on('click', function() {
-        //make an ajax call with the textsurv data.
-        var s_code = $('#input-s_code').val();
-        
-        if (!s_code) {
-            alert('Survey code Required');
-            return; 
-        }
-        
+$(document).ready(function() {
+    $('button#button-start-survey').on('click', function(e){
         var settings = {
-            'url': '/account/login/',
-            'data': 's_code=' + s_code,
-            'complete': function(data) {
-                console.log(data); 
-            },
-            'dataType': 'json'
+            url: '/survey/loadLast',
+            type: 'GET',
+            data: '',
+            dataType: 'json'
         };
-        
-        
-        $.ajax(settings); 
-    }); 
-}); 
+
+        var callback = function(data) {
+            console.log(data);
+        }
+
+        $.ajax(settings).done(callback);
+
+    })
+})

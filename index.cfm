@@ -1,12 +1,12 @@
 <cfscript>
     This.sessionManagement="Yes";
-    
-    writedump(FORM);
-    //session = GetPageContext().GetSession(); 
+
+    //get the value of the valid flag to check if the user is logged in.
+    valid = GetPageContext().GetSession().getValue('valid');
+
 
     objRequest = GetPageContext().GetRequest(); 
     strUrl = objRequest.GetRequestUrl(); 
-    //writedump(strUrl.toString());
     
     /*
      *extract the path_info and remove the first '/' from the string
@@ -19,7 +19,9 @@
     nodes = path.split('/');
     
     //If the path_info and script name are the same, the user requested the root file.
-    if(compare(cgi.PATH_INFO, cgi.SCRIPT_NAME) == 0) {
+    if(compare(cgi.PATH_INFO, cgi.SCRIPT_NAME) == 0 ||
+        !isDefined('valid') || compare(valid, 'true') != 0) {
+
         nodes = [];
         
         /*
@@ -51,7 +53,7 @@
 	result = queryService.execute();
         
         //writedump(serializeJson(result.getResult()));
-        writedump(result.getResult()); 
+        
 	/*
 	yQry = new Query(); // new query object     
 	    myQry.setSQL("select bookid, title, genre from app.books where bookid = :bookid"); //set query
@@ -60,8 +62,5 @@
 	    writedump(qryRes.getResult().recordcount, true); // get resultcount
 	    writedump(qryRes.getResult(), false); // dump result
 	*/
-	
-    writedump(cgi);
-    
 
 </cfscript> 

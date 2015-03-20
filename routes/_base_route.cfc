@@ -25,6 +25,14 @@ component _base_route
 	function getRequest() {
 	    return new components.Request(); 
 	}
+
+    function getQuery(sql) {
+        var q = new Query();
+
+        q.setDatasource("rde_survey").setSQL(sql);
+
+        return q;
+    }
 	
 	/*
 	 *@method: userValid() - checks if the user data is valid and the user is logged in.
@@ -47,7 +55,34 @@ component _base_route
 		
 	    }
 	    
-	} 
+	}
+
+    function buildDataObj(obj) {
+
+        if(obj.recordcount > 0) {
+        //create a collection structure.
+            var collection = StructNew();
+
+            //extract the columns and split them into an array.
+            var cols = obj.ColumnList.split(',');
+
+            //loop through each result.
+            for(var i = 1; i <= obj.recordcount; i++) {
+                var row = StructNew();
+
+                for(field in cols) {
+                    row[field] = obj[field][i];
+
+
+                }
+                //collection[obj['entity_id'][i]] = row;
+                collection[i] = row;
+            }
+
+            return collection;
+
+        }
+    }
 }
 
 </cfscript>
