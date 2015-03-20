@@ -100,19 +100,31 @@ component Survey
 
             if(result.recordcount > 0) {
 
-                writeoutput(result['last'][1]);
+                var q_id = result['last'][1];
 
+                var output = StructNew();
+                output['statusCode'] = 200;
+                output['data'] = invoke('survey', 'getQuestionData', {q_id=q_id});
+                output['message'] = 'success';
+
+            } else {
+                var output = StructNew();
+                output['statusCode'] = 200;
+                output['data'] = '';
+                output['message'] = "no records found";
             }
+
 
         } else {
 
             //create a collection structure.
             var output = StructNew();
-            output['statusCode'] = '300';
+            output['statusCode'] = 300;
             output['location'] = '/account/login';
-
-            writeOutput(SerializeJSON(output));
+            outout['message'] = 'authentication required'; 
         }
+
+        writeOutput(SerializeJSON(output));
     }
 
     /*
@@ -135,6 +147,49 @@ component Survey
         */
         if(isNumeric(q_id) && q_id != 0) {
 
+            var output = StructNew();
+
+            output['statusCode'] = 200;
+            output['data'] = invoke('survey', 'getQuestionData', {q_id=q_id});
+
+            writeoutput(serializeJSON(output));
+            //writeoutput(serializeJSON(invoke('survey', 'getQuestionData', {q_id=q_id})));
+        }
+    }
+
+    /*
+    @method getQuestionData()
+    @description - Loads all question data including, the question, options, and answer
+    */
+    public function getQuestionData(q_id) {
+
+        /*
+        * check if the s_code is defined and is numeric.
+        * if so, query the database for the last answered question.
+        */
+
+        if(isNumeric(q_id) && q_id != 0) {
+
+            //stucture to store the question data.
+            var data = structNew();
+
+            //store the question record.
+            data['question'] = super.buildDataObj(invoke('survey', 'getQuestion', {q_id=q_id}));
+
+            //load the answer options
+            data['options'] = super.buildDataObj(invoke('survey', 'getOptions', {q_id=q_id}));
+
+            //load the answer record.
+            data['answer'] = super.buildDataObj(invoke('survey', 'getAnswer', {q_id=q_id}));
+
+            return data;
+        }
+    }
+
+    public function getQuestion(q_id) {
+
+        if(isNumeric(q_id) && q_id != 0) {
+
             var q = super.getQuery('SELECT * FROM question_table WHERE entity_id = :q_id');
 
             q.addParam(name = 'q_id', value = q_id, CFSQLTYPE = "CF_SQL_INT");
@@ -143,27 +198,7 @@ component Survey
 
             if (result.recordcount > 0) {
 
-                var output = structNew();
-
-                output['statusCode'] = 200;
-                //output['data'] = super.buildDataObj(result);
-
-                //stucture to store the question data.
-                var data = structNew();
-
-                //store the question record.
-                data['question'] = super.buildDataObj(result);
-
-                //load the answer options
-                data['options'] = super.buildDataObj(invoke('survey', 'getOptions', {q_id=q_id}));
-
-                //load the answer record.
-                data['answer'] = super.buildDataObj(invoke('survey', 'getAnswer', {q_id=q_id}));
-
-                output['data'] = data;
-
-                writedump(serializeJSON(output));
-                exit;
+                return result;
             }
         }
     }
