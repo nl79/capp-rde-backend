@@ -158,7 +158,7 @@ component Survey
                 data['options'] = super.buildDataObj(invoke('survey', 'getOptions', {q_id=q_id}));
 
                 //load the answer record.
-                //data['answer'] = super.buildDataObj(invoke('survey', 'getOptions', {q_id=q_id}));
+                data['answer'] = super.buildDataObj(invoke('survey', 'getAnswer', {q_id=q_id}));
 
                 output['data'] = data;
 
@@ -181,9 +181,16 @@ component Survey
         /* get the s_code from session. */
         var s_code_id = sess.getValue('s_code_id');
 
-        var q = super.getQuery('SELECT t1.* FROM option_table as t1, question_options_table as t2
-                                WHERE t2.q_id = :q_id AND t1.entity_id = t2.o_id ');
+        var q = super.getQuery('SELECT t1.* FROM answer_table as t1
+                                WHERE t1.q_id = :q_id AND t1.s_code_id = :s_code_id ');
 
+        q.addParam(name='q_id', value=q_id,CFSQLTYPE="CF_SQL_INT");
+
+        q.addParam(name='s_code_id', value=s_code_id,CFSQLTYPE="CF_SQL_INT");
+
+        result = q.execute().getResult();
+
+        return result;
 
     }
 

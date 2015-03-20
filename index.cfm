@@ -6,8 +6,8 @@
 
 
     objRequest = GetPageContext().GetRequest(); 
-    strUrl = objRequest.GetRequestUrl(); 
-    
+    strUrl = objRequest.GetRequestUrl();
+
     /*
      *extract the path_info and remove the first '/' from the string
      */
@@ -22,14 +22,27 @@
     if(compare(cgi.PATH_INFO, cgi.SCRIPT_NAME) == 0 ||
         !isDefined('valid') || compare(valid, 'true') != 0) {
 
-        nodes = [];
-        
         /*
-         *append a default route: survey
-         *Action: login
-         */
-        ArrayAppend(nodes, 'account');
-        ArrayAppend(nodes, 'index'); 
+        check the current nodes
+        If they are 'account/login' do not modify.
+        */
+        if(ArrayLen(nodes) >= 2) {
+            if(compareNoCase(nodes[1], 'account') != 0 ||
+                compareNoCase(nodes[2], 'login') != 0) {
+                    nodes = [];
+                    ArrayAppend(nodes, 'account');
+                    ArrayAppend(nodes, 'login');
+                }
+        } else {
+            nodes = [];
+
+            /*
+             *append a default route: survey
+             *Action: login
+             */
+            ArrayAppend(nodes, 'account');
+            ArrayAppend(nodes, 'index');
+        }
         
     }
     
@@ -42,25 +55,11 @@
     
     router.loadRoute();  
     exit;
-    
-    
-    
-    
+
 	queryService = new Query(); 
 	
 	queryService.setDatasource("rde_survey");
 	queryService.setSQL('select * from question_table');
 	result = queryService.execute();
-        
-        //writedump(serializeJson(result.getResult()));
-        
-	/*
-	yQry = new Query(); // new query object     
-	    myQry.setSQL("select bookid, title, genre from app.books where bookid = :bookid"); //set query
-	    myQry.addParam(name="bookid",value="5",CFSQLTYPE="CF_SQL_INT"); // add query param
-	    qryRes = myQry.execute(); // execute query
-	    writedump(qryRes.getResult().recordcount, true); // get resultcount
-	    writedump(qryRes.getResult(), false); // dump result
-	*/
 
 </cfscript> 

@@ -127,3 +127,5 @@ VALUES(1,1),(1,2),(1,3),(1,4);
 -- Survey code table link - the survey code will be generated automatically. 
 INSERT INTO survey_code_table (s_code, s_id, tos) 
 VALUES('testsurv', 1, null); 
+
+-- SELECT t1.* FROM answer_table as t1 WHERE t1.q_id = 1 AND t1.s_code_id = 1; 

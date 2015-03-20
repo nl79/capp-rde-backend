@@ -39,7 +39,9 @@ component Account
 	    var s_code = req.getData('s_code'); 
 	    
 	    //get the terms of service status
-	    var tos = req.getData('tos'); 
+	    var tos = req.getData('tos');
+
+        writedump(s_code);
 	    
         /*
 	     *validate the users survey code
