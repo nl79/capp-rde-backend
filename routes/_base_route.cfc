@@ -3,12 +3,12 @@
 component _base_route
 	output="false"
 	{
-    	    
+    variables.this;
         /*
 	 *base route constructor
 	 */
         _base_route function init() {
-            
+            variables.this = this;
 	    return( this ); 
         }
 	
@@ -73,10 +73,9 @@ component _base_route
                 for(field in cols) {
                     row[field] = obj[field][i];
 
-
                 }
-                //collection[obj['entity_id'][i]] = row;
-                collection[i] = row;
+                collection[obj['entity_id'][i]] = row;
+                //collection[i] = row;
             }
 
             return collection;

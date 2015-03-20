@@ -25,8 +25,9 @@ component Survey
         q.addParam(name='s_id', value=s_id,CFSQLTYPE="CF_SQL_INT");
 
         result = q.execute().getResult();
-/*
+
         if(result.recordcount > 0) {
+
 
             var keys = [];
             for(var i = 1; i <= result.recordcount; i++){
@@ -37,11 +38,18 @@ component Survey
             output['statusCode'] = '200';
             output['data'] = keys;
 
+            /*
+            var output = structNew();
+            output['statusCode'] = '200';
+            output['data'] = super.buildDataObj(result);
+            */
             writedump(SerializeJSON(output));
 
         }
-        */
-        writeDump(super.buildDataObj(result));
+
+
+
+        //writeDump(super.buildDataObj(result));
 
 
         include "/public/survey.html";
@@ -111,7 +119,7 @@ component Survey
     @method actionLoadQuestion()
     @description - loads the question and answer data for the supplied question id.
     */
-    function actionLoadQuestion() {
+    public function actionLoadQuestion() {
 
         /* get the request object */
         var req = super.getRequest();
@@ -135,11 +143,60 @@ component Survey
 
             if (result.recordcount > 0) {
 
+                var output = structNew();
 
-                writedump(serializeJSON(result));
+                output['statusCode'] = 200;
+                //output['data'] = super.buildDataObj(result);
 
+                //stucture to store the question data.
+                var data = structNew();
+
+                //store the question record.
+                data['question'] = super.buildDataObj(result);
+
+                //load the answer options
+                data['options'] = super.buildDataObj(invoke('survey', 'getOptions', {q_id=q_id}));
+
+                //load the answer record.
+                //data['answer'] = super.buildDataObj(invoke('survey', 'getOptions', {q_id=q_id}));
+
+                output['data'] = data;
+
+                writedump(serializeJSON(output));
+                exit;
             }
         }
+    }
+
+    /*
+    @method getAnswer()
+    @param q_id - question id
+    @param s_code_id - survey code id.
+    */
+    public function getAnswer(q_id) {
+
+        /* get the session object */
+        var sess = super.getSession();
+
+        /* get the s_code from session. */
+        var s_code_id = sess.getValue('s_code_id');
+
+        var q = super.getQuery('SELECT t1.* FROM option_table as t1, question_options_table as t2
+                                WHERE t2.q_id = :q_id AND t1.entity_id = t2.o_id ');
+
+
+    }
+
+    public function getOptions(q_id) {
+
+        var q = super.getQuery('SELECT t1.* FROM option_table as t1, question_options_table as t2
+                                WHERE t2.q_id = :q_id AND t1.entity_id = t2.o_id ');
+
+        q.addParam(name='q_id', value=q_id,CFSQLTYPE="CF_SQL_INT");
+
+        result = q.execute().getResult();
+
+        return result;
     }
 	/*
 	 *@method actionLoad() - Load the survey question/questions based on the
