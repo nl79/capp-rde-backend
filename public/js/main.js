@@ -7,11 +7,12 @@ function renderQuestion(resp) {
         var options = resp.data.options;
         var answer = resp.data.answer;
 
-        console.log(options);
+        console.log(question.ENTITY_ID);
 
         //create the form element.
         var html =  '<form id="form-question-data" method="post" action="/survey/submitAnswer">';
-        html += '<input type="hidden" name="q_id" value="' + resp.data.question[0].ENTITY_ID.trim() + '"/>';
+        html += '<input type="hidden" name="q_id" value="' + question.ENTITY_ID + '"/>';
+        html += '<input type="hidden" name="q_type" value="' + question.TYPE.trim() + '"/>';
         html += '<p id="p-question">' + resp.data.question[0].QUESTION + '</p>';
 
         var type = resp.data.question[0].TYPE.trim();
@@ -38,19 +39,26 @@ function renderQuestion(resp) {
             if(answer) {
 
             }  else {
-                html += "<textarea class='text' name='answer'></textarea>";
+                html += "<textarea class='text' name='answer'></textarea><br />";
             }
 
 
         }
 
 
-
+        html += "<button onclick='submitAnswer(this)' id='button-submit' type='button' name='submit' value='submit'>Submit</button>";
         html += '</form>';
 
         document.getElementById('div-content').innerHTML = html;
     }
 
+}
+
+function submitAnswer(ele){
+    var answers = document.getElementsByName('answer');
+
+
+    console.log(answers);
 }
 
 $(document).ready(function() {
