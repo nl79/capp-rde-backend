@@ -61,7 +61,8 @@ component _base_route
 
         if(obj.recordcount > 0) {
         //create a collection structure.
-            var collection = StructNew();
+            //var collection = StructNew();
+            var collection = [];
 
             //extract the columns and split them into an array.
             var cols = obj.ColumnList.split(',');
@@ -74,8 +75,9 @@ component _base_route
                     row[field] = obj[field][i];
 
                 }
-                collection[obj['entity_id'][i]] = row;
+                //collection[obj['entity_id'][i]] = row;
                 //collection[i] = row;
+                arrayAppend(collection, row);
             }
 
             return collection;

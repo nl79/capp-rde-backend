@@ -102,6 +102,17 @@ component Survey
 
                 var q_id = result['last'][1];
 
+
+                /**********TEST CODE******************/
+
+
+                q_id = 1;
+
+
+                /*************END TEST CODE***********/
+
+
+
                 var output = StructNew();
                 output['statusCode'] = 200;
                 output['data'] = invoke('survey', 'getQuestionData', {q_id=q_id});
@@ -121,7 +132,7 @@ component Survey
             var output = StructNew();
             output['statusCode'] = 300;
             output['location'] = '/account/login';
-            outout['message'] = 'authentication required'; 
+            outout['message'] = 'authentication required';
         }
 
         writeOutput(SerializeJSON(output));
@@ -190,7 +201,9 @@ component Survey
 
         if(isNumeric(q_id) && q_id != 0) {
 
-            var q = super.getQuery('SELECT * FROM question_table WHERE entity_id = :q_id');
+            //var q = super.getQuery('SELECT * FROM question_table WHERE entity_id = :q_id');
+            var q = super.getQuery('SELECT *, t2.[type] FROM question_table as t1, question_type as t2
+                                    WHERE t1.entity_id = :q_id AND t1.q_type = t2.entity_id');
 
             q.addParam(name = 'q_id', value = q_id, CFSQLTYPE = "CF_SQL_INT");
 
