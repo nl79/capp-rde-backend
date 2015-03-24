@@ -7,12 +7,11 @@ function renderQuestion(resp) {
         var options = resp.data.options;
         var answer = resp.data.answer;
 
-        console.log(question.ENTITY_ID);
-
         //create the form element.
         var html =  '<form id="form-question-data" method="post" action="/survey/submitAnswer">';
         html += '<input type="hidden" name="q_id" value="' + question.ENTITY_ID + '"/>';
         html += '<input type="hidden" name="q_type" value="' + question.TYPE.trim() + '"/>';
+        html += '<input type="hidden" name="a_type" value="' + question.A_TYPE + '"/>';
         html += '<p id="p-question">' + resp.data.question[0].QUESTION + '</p>';
 
         var type = resp.data.question[0].TYPE.trim();
@@ -27,7 +26,7 @@ function renderQuestion(resp) {
                     html += "<input id='o_id-" + options[i].ENTITY_ID +
                     "' type='" + type.trim() +
                     "' name='answer'" +
-                    "' value='" + options[i].VALUE.trim() + "' />" +
+                    "' value='" + options[i].ENTITY_ID + "' />" +
                     options[i].VALUE.trim() + "<br />";
                 }
             }
@@ -37,11 +36,11 @@ function renderQuestion(resp) {
             set the data inside the id field and the value.
              */
             if(answer) {
-
+                console.log('here');
+                console.log(answer);
             }  else {
                 html += "<textarea class='text' name='answer'></textarea><br />";
             }
-
 
         }
 
@@ -55,10 +54,23 @@ function renderQuestion(resp) {
 }
 
 function submitAnswer(ele){
-    var answers = document.getElementsByName('answer');
 
+    //serialize the form.
+    var data = $('form#form-question-data').serialize();
 
-    console.log(answers);
+    var settings = {
+        url: '/survey/save',
+        type: 'POST',
+        data: data,
+        dataType: 'json'
+    };
+
+    var callback = function(data) {
+        console.log(data);
+    }
+
+    $.ajax(settings).done(callback);
+
 }
 
 $(document).ready(function() {

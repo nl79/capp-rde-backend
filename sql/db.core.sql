@@ -43,19 +43,19 @@ CREATE TABLE question_table(
 	a_type		int				null        FOREIGN KEY REFERENCES answer_type(entity_id),
 );
 
+CREATE TABLE option_table (
+    entity_id       int     not null     IDENTITY(1,1)	PRIMARY KEY,
+    [value]         char(150)   not null, 
+);
+
 -- q_id - question id that the answer is assocciated with.
 -- s_code_id - the survey code id the answer is assoccited with. (used for assocciting answer with individual takers). 
 CREATE TABLE answer_table(
 	entity_id	int					not null		IDENTITY(1,1)	PRIMARY KEY, 
 	q_id		int					not null		FOREIGN KEY REFERENCES question_table(entity_id),
     s_code_id   int					not null        FOREIGN KEY REFERENCES survey_code_table(entity_id),
-	value		varchar(150)		not null 
-); 
-
-CREATE TABLE option_table (
-    entity_id       int     not null     IDENTITY(1,1)	PRIMARY KEY,
-    [value]         char(150)   not null, 
-
+	o_id		int					null			FOREIGN KEY REFERENCES option_table(entity_id),
+	value		varchar(150)		null 
 );
 
 CREATE TABLE survey_question_table(

@@ -202,7 +202,7 @@ component Survey
         if(isNumeric(q_id) && q_id != 0) {
 
             //var q = super.getQuery('SELECT * FROM question_table WHERE entity_id = :q_id');
-            var q = super.getQuery('SELECT *, t2.[type] FROM question_table as t1, question_type as t2
+            var q = super.getQuery('SELECT *, t2.[type], t3.[type] as data_type FROM question_table as t1, question_type as t2, answer_type as t3
                                     WHERE t1.entity_id = :q_id AND t1.q_type = t2.entity_id');
 
             q.addParam(name = 'q_id', value = q_id, CFSQLTYPE = "CF_SQL_INT");
@@ -322,6 +322,83 @@ component Survey
         }
 	    
 	}
+
+    function actionSave() {
+        /* get the request object */
+        var req = super.getRequest();
+
+        /* get the session object */
+        var sess = super.getSession();
+
+        /*
+        get the answers from the request object.
+        the answer will be a string of numbers
+        if multiple checkbox items were selected.
+        */
+        var answer = req.getData('answer');
+
+        /* validate if the answers is a valid string and attempt to split on ',' */
+        if(isDefined('answer') && Compare(getMetadata(answer).getName(), 'java.lang.String') == 0) {
+
+            /*split the answer on comma */
+            var parts = answer.split(',');
+
+            if(len(parts) > 0) {
+                /*get the q_id */
+                var q_id = req.getData('q_id');
+
+                /* get the s_code from session. */
+                var s_code_id = sess.getValue('s_code_id');
+
+                /*load the question data from the database*/
+                var question = invoke('survey', 'getQuestion', {q_id=q_id});
+
+                var type = question['type'][1].trim();
+
+                /* generate a SQL string */
+                var sql = "";
+
+                switch(type) {
+                    case "checkbox":
+                    case "radio":
+                        sql = "INSERT INTO answer_table (q_id, s_code_id, o_id) VALUES";
+
+                        for(var i = 1; i <= ArrayLen(parts); i++) {
+                            if(isNumeric(parts[i]) && isNumeric(q_id) && isNumeric(s_code_id)) {
+                                sql &= "(" & q_id & "," & s_code_id & "," & parts[i] & "),";
+                            }
+                        }
+
+                        sql = REReplace(sql, ",$", "");
+
+                        break;
+                    case "text":
+
+                        sql = "INSERT INTO answer_table (q_id, s_code_id, [value]) VALUES";
+                        if(isNumeric(q_id) && isNumeric(s_code_id)) {
+                            sql &= "(" & q_id & "," & s_code_id & ",'" & parts[1] & "')";
+                        }
+                        break;
+                }
+
+                writeoutput(sql);
+
+                /* build the query object */
+                var q = super.getQuery(sql);
+
+                var result = q.execute().getResult();
+                var id = result.getPrefix().generatedkey;
+
+                if(isNumeric(id)) {
+                    /* create a json success response */
+                    writeoutput('success');
+                } else {
+                    /* create a json error response */
+                    writeoutput('failed');
+                }
+            }
+        }
+    }
 }
 
 </cfscript>
