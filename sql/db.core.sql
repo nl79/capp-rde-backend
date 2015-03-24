@@ -54,7 +54,6 @@ CREATE TABLE answer_table(
 	entity_id	int					not null		IDENTITY(1,1)	PRIMARY KEY, 
 	q_id		int					not null		FOREIGN KEY REFERENCES question_table(entity_id),
     s_code_id   int					not null        FOREIGN KEY REFERENCES survey_code_table(entity_id),
-	o_id		int					null			FOREIGN KEY REFERENCES option_table(entity_id),
 	value		varchar(150)		null 
 );
 

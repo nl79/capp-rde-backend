@@ -12,9 +12,20 @@ function renderQuestion(resp) {
         html += '<input type="hidden" name="q_id" value="' + question.ENTITY_ID + '"/>';
         html += '<input type="hidden" name="q_type" value="' + question.TYPE.trim() + '"/>';
         html += '<input type="hidden" name="a_type" value="' + question.A_TYPE + '"/>';
+
+        /*
+        if answers are present. Set a hidden update flag to alert the system
+        that the answer records exist and must be updated instead of inserted.
+         */
+        if(answer && answer.length && answer.length > 0){
+            html += '<input type="hidden" name="ac" value="update"/>';
+
+        }
+
         html += '<p id="p-question">' + resp.data.question[0].QUESTION + '</p>';
 
         var type = resp.data.question[0].TYPE.trim();
+        console.log(answer);
 
         console.log(type);
 
@@ -22,11 +33,16 @@ function renderQuestion(resp) {
 
             if (options && options.length && options.length > 0) {
 
+                /*loop and build the options list.
+                the values property of the input field must replace all comma ',' characters
+                with a '~' because coldfusion uses ',' as a list separator. Therefore
+                leaving the comma in place would split an option into pieces.
+                 */
                 for (var i = 0; i < options.length; i++) {
                     html += "<input id='o_id-" + options[i].ENTITY_ID +
                     "' type='" + type.trim() +
                     "' name='answer'" +
-                    "' value='" + options[i].ENTITY_ID + "' />" +
+                    "' value='" + options[i].VALUE.trim().replace(',','~') + "' />" +
                     options[i].VALUE.trim() + "<br />";
                 }
             }
@@ -35,12 +51,15 @@ function renderQuestion(resp) {
             /*check if answer is set for the current question and
             set the data inside the id field and the value.
              */
-            if(answer) {
-                console.log('here');
-                console.log(answer);
-            }  else {
-                html += "<textarea class='text' name='answer'></textarea><br />";
+            html += "<textarea class='text' name='answer'>";
+            if(answer && answer.length && answer.length > 0) {
+
+                html += answer[0].VALUE.trim();
             }
+
+            html += "</textarea><br />";
+
+
 
         }
 

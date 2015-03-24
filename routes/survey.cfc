@@ -324,6 +324,9 @@ component Survey
 	}
 
     function actionSave() {
+        /*sucess flag */
+        var valid = true;
+
         /* get the request object */
         var req = super.getRequest();
 
@@ -337,11 +340,19 @@ component Survey
         */
         var answer = req.getData('answer');
 
+
         /* validate if the answers is a valid string and attempt to split on ',' */
-        if(isDefined('answer') && Compare(getMetadata(answer).getName(), 'java.lang.String') == 0) {
+        if(isDefined('answer') && Compare(getMetadata(answer).getName(), 'java.lang.String') == 0 &&
+                len(answer) > 0) {
 
             /*split the answer on comma */
             var parts = answer.split(',');
+
+            /*loop over the parts and replace the ~ inside the string with a ',' character*/
+            for(i=1; i <= ArrayLen(parts); i++)
+            {
+                parts[i] = ReplaceNoCase(parts[i],"~",",","all");
+            }
 
             if(len(parts) > 0) {
                 /*get the q_id */
@@ -353,50 +364,84 @@ component Survey
                 /*load the question data from the database*/
                 var question = invoke('survey', 'getQuestion', {q_id=q_id});
 
+                /*try to load the answers from the database to check if one exists.
+                if so, create and update query.
+                */
+                var answer = invoke('survey', 'getAnswer', {q_id=q_id});
+
                 var type = question['type'][1].trim();
 
                 /* generate a SQL string */
                 var sql = "";
 
-                switch(type) {
-                    case "checkbox":
-                    case "radio":
-                        sql = "INSERT INTO answer_table (q_id, s_code_id, o_id) VALUES";
+                /*
+                check if an answer record exists for the current question.
+                if so, create and update query.
+                */
+                if(answer.recordcount == 1) {
+                    /* get the answer id from the result. */
+                    var entity_id = answer['entity_id'][1];
 
-                        for(var i = 1; i <= ArrayLen(parts); i++) {
-                            if(isNumeric(parts[i]) && isNumeric(q_id) && isNumeric(s_code_id)) {
-                                sql &= "(" & q_id & "," & s_code_id & "," & parts[i] & "),";
-                            }
+                    sql = "UPDATE answer_table SET [value] = ";
+                    switch (type) {
+                        case "checkbox":
+                        case "radio":
+                            sql &= "'" & arrayToList(parts, '|') & "'";
+                                break;
+                        case "text":
+                            sql &= "'" & parts[1] & "'";
+                                break;
+                    }
+
+                    sql &= " WHERE entity_id=" & entity_id;
+
+                } else {
+
+                    sql = "INSERT INTO answer_table (q_id, s_code_id, [value]) VALUES";
+                    if (isNumeric(q_id) && isNumeric(s_code_id)) {
+                        sql &= "(" & q_id & "," & s_code_id & ",";
+                        switch (type) {
+                            case "checkbox":
+                            case "radio":
+                                sql &= "'" & arrayToList(parts, '|') & "'";
+                                    break;
+                            case "text":
+                                sql &= "'" & parts[1] & "'";
+                                    break;
                         }
 
-                        sql = REReplace(sql, ",$", "");
-
-                        break;
-                    case "text":
-
-                        sql = "INSERT INTO answer_table (q_id, s_code_id, [value]) VALUES";
-                        if(isNumeric(q_id) && isNumeric(s_code_id)) {
-                            sql &= "(" & q_id & "," & s_code_id & ",'" & parts[1] & "')";
-                        }
-                        break;
+                        sql &= ")";
+                    }
                 }
-
-                writeoutput(sql);
 
                 /* build the query object */
                 var q = super.getQuery(sql);
 
-                var result = q.execute().getResult();
-                var id = result.getPrefix().generatedkey;
+                try{
+                    var result = q.execute();
+                    valid = true;
+                } catch(any exception) {
+                    writeoutput(exeption.message);
+                    valid = false;
+                }
 
-                if(isNumeric(id)) {
-                    /* create a json success response */
+                /*
+                var result = q.execute().getPrefix();
+                var id = result.generatedkey;
+                */
+                if(valid == true) {
                     writeoutput('success');
                 } else {
-                    /* create a json error response */
                     writeoutput('failed');
                 }
+
+
             }
+        } else {
+            /* Invalid answer supplied */
+            writeoutput('no answer supplied');
+
+
         }
     }
 }
