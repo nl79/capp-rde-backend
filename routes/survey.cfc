@@ -106,7 +106,7 @@ component Survey
                 /**********TEST CODE******************/
 
 
-                q_id = 3;
+                q_id = 1;
 
 
                 /*************END TEST CODE***********/
