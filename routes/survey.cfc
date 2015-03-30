@@ -80,6 +80,33 @@ component Survey
     */
     function actionLoadLast() {
 
+        var q_id = invoke('survey', 'getLast');
+
+        if(q_id > 0) {
+
+            var output = StructNew();
+            output['statusCode'] = 200;
+            output['data'] = invoke('survey', 'getQuestionData', {q_id=q_id});
+            output['message'] = 'success';
+
+        } else {
+            var output = StructNew();
+            output['statusCode'] = 200;
+            output['data'] = '';
+            output['message'] = "no records found";
+        }
+
+        writeOutput(SerializeJSON(output));
+    }
+
+    /*
+    start the survey
+    */
+    public function actionStart()
+    {
+        /* get the request object */
+        var req = super.getRequest();
+
         /* get the session object */
         var sess = super.getSession();
 
@@ -87,57 +114,33 @@ component Survey
         var s_code_id = sess.getValue('s_code_id');
 
         /*
-        * check if the s_code is defined and is numeric.
-        * if so, query the database for the last answered question.
+        query the database and get a list of all question
+        entity_ids that are associated with the current survey id.
         */
-        if(isDefined('s_code_id') && isNumeric(s_code_id)) {
 
-            var q = super.getQuery('SELECT [last] FROM survey_code_table WHERE entity_id = :s_code_id');
+        var q = super.getQuery('SELECT t1.q_id ' &
+        ' FROM survey_question_table as t1' &
+        ' WHERE t1.s_id= :s_code_id');
 
-            q.addParam(name='s_code_id', value=s_code_id,CFSQLTYPE="CF_SQL_INT");
+        q.addParam(name = 's_code_id', value = s_code_id, CFSQLTYPE = "CF_SQL_INT");
 
-            result = q.execute().getResult();
+        result = q.execute().getResult();
 
-            if(result.recordcount > 0) {
+        if (result.recordcount > 0) {
 
-                var q_id = result['last'][1];
-
-
-                /**********TEST CODE******************/
-
-
-                q_id = 1;
-
-
-                /*************END TEST CODE***********/
-
-
-
-                var output = StructNew();
-                output['statusCode'] = 200;
-                output['data'] = invoke('survey', 'getQuestionData', {q_id=q_id});
-                output['message'] = 'success';
-
-            } else {
-                var output = StructNew();
-                output['statusCode'] = 200;
-                output['data'] = '';
-                output['message'] = "no records found";
+            var keys = [];
+            for (var i = 1; i <= result.recordcount; i++) {
+                keys[i] = result['q_id'][i];
             }
 
-
-        } else {
-
-            //create a collection structure.
-            var output = StructNew();
-            output['statusCode'] = 300;
-            output['location'] = '/account/login';
-            outout['message'] = 'authentication required';
         }
 
-        writeOutput(SerializeJSON(output));
-    }
+        /* set the keys array in session */
+        sess.putValue('q_id_list', keys);
 
+        writedump(sess.getValue('q_id_list'));
+
+    }
     /*
     @method actionLoadQuestion()
     @description - loads the question and answer data for the supplied question id.
@@ -197,6 +200,33 @@ component Survey
         }
     }
 
+    public function getLast() {
+        /* get the session object */
+        var sess = super.getSession();
+
+        /* get the s_code from session. */
+        var s_code_id = sess.getValue('s_code_id');
+
+        /*
+        * check if the s_code is defined and is numeric.
+        * if so, query the database for the last answered question.
+        */
+        if(isDefined('s_code_id') && isNumeric(s_code_id)) {
+
+            var q = super.getQuery('SELECT [last] FROM survey_code_table WHERE entity_id = :s_code_id');
+
+            q.addParam(name = 's_code_id', value = s_code_id, CFSQLTYPE = "CF_SQL_INT");
+
+            result = q.execute().getResult();
+
+
+            var q_id = result['last'][1];
+
+            return q_id;
+        }
+    }
+
+    
     public function getQuestion(q_id) {
 
         if(isNumeric(q_id) && q_id != 0) {
@@ -355,6 +385,13 @@ component Survey
             }
 
             if(len(parts) > 0) {
+
+                /* flag the determines if a new answers record was created.
+                if set to true, the survey_code status will reflect the last
+                question answered in order to save status.
+                */
+                var insert = false;
+
                 /*get the q_id */
                 var q_id = req.getData('q_id');
 
@@ -396,7 +433,10 @@ component Survey
                     sql &= " WHERE entity_id=" & entity_id;
 
                 } else {
+                    /* set the insert flag to true */
+                    insert = true;
 
+                    /* build the query */
                     sql = "INSERT INTO answer_table (q_id, s_code_id, [value]) VALUES";
                     if (isNumeric(q_id) && isNumeric(s_code_id)) {
                         sql &= "(" & q_id & "," & s_code_id & ",";
@@ -420,6 +460,21 @@ component Survey
                 try{
                     var result = q.execute();
                     valid = true;
+
+                    /*if a new answer was created, update the last question answerd
+                    for the current survey_code_id
+                    */
+                    if(valid == true && insert == true) {
+
+                        var updateQuery = super.getQuery("UPDATE survey_code_table SET [last]= :q_id
+                         WHERE entity_id=:s_code_id");
+
+                        updateQuery.addParam(name='s_code_id', value=s_code_id,CFSQLTYPE="CF_SQL_INT");
+                        updateQuery.addparam(name='q_id', value=q_id, CFSQLTYPE="CF_SQL_INT");
+
+                        updateQuery.execute();
+
+                    }
                 } catch(any exception) {
                     writeoutput(exeption.message);
                     valid = false;

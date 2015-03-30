@@ -7,25 +7,21 @@ function renderQuestion(resp) {
         var options = resp.data.options;
         var answer = resp.data.answer;
 
+        //array of answer values.
+        var answers = [];
+
         //create the form element.
         var html =  '<form id="form-question-data" method="post" action="/survey/submitAnswer">';
         html += '<input type="hidden" name="q_id" value="' + question.ENTITY_ID + '"/>';
         html += '<input type="hidden" name="q_type" value="' + question.TYPE.trim() + '"/>';
         html += '<input type="hidden" name="a_type" value="' + question.A_TYPE + '"/>';
 
-        /*
-        if answers are present. Set a hidden update flag to alert the system
-        that the answer records exist and must be updated instead of inserted.
-         */
-        if(answer && answer.length && answer.length > 0){
-            html += '<input type="hidden" name="ac" value="update"/>';
-
-        }
-
         html += '<p id="p-question">' + resp.data.question[0].QUESTION + '</p>';
 
         var type = resp.data.question[0].TYPE.trim();
-        console.log(answer);
+
+
+
 
         console.log(type);
 
@@ -33,17 +29,35 @@ function renderQuestion(resp) {
 
             if (options && options.length && options.length > 0) {
 
+                /*
+                 if answer is not empty, create an array of values to check against.
+                 */
+                if(answer && answer.length && answer.length == 1) {
+                    var list = answer[0].VALUE.trim().split('|');
+                }
+
                 /*loop and build the options list.
                 the values property of the input field must replace all comma ',' characters
                 with a '~' because coldfusion uses ',' as a list separator. Therefore
                 leaving the comma in place would split an option into pieces.
                  */
                 for (var i = 0; i < options.length; i++) {
+
+                    var value = options[i].VALUE.trim()
+
+
                     html += "<input id='o_id-" + options[i].ENTITY_ID +
                     "' type='" + type.trim() +
                     "' name='answer'" +
-                    "' value='" + options[i].VALUE.trim().replace(',','~') + "' />" +
-                    options[i].VALUE.trim() + "<br />";
+                    "' value='" + options[i].VALUE.trim().replace(',','~') + "'";
+
+                    /* check if the value exists in the options list. */
+                    if(list.indexOf(value) != -1) {
+                        html += " checked ";
+                    }
+
+                    html += "/>" + value + "<br />";
+
                 }
             }
         } else if (type=='text') {
