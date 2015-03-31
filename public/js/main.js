@@ -20,11 +20,6 @@ function renderQuestion(resp) {
 
         var type = resp.data.question[0].TYPE.trim();
 
-
-
-
-        console.log(type);
-
         if(type == 'radio' || type=='checkbox') {
 
             if (options && options.length && options.length > 0) {
@@ -72,18 +67,40 @@ function renderQuestion(resp) {
             }
 
             html += "</textarea><br />";
-
-
-
         }
 
+        html += "<button onclick='getPrevious(this)' " +
+        "id='button-previous' type='button' name='submit' value='previous'>Prev</button>";
 
-        html += "<button onclick='submitAnswer(this)' id='button-submit' type='button' name='submit' value='submit'>Submit</button>";
+        html += "<button onclick='submitAnswer(this)' " +
+        "id='button-submit' type='button' name='submit' value='submit'>Submit</button>";
+
+        html += "<button onclick='getNext(this)' " +
+        "id='button-next' type='button' name='submit' value='next'>Next</button>";
+
+
+        html += "<br />" +
+        "<button onclick='skip(this)' id='button-skip' " +
+        "type='button' name='submit' value='skip'>Skip</button>";
+
+
         html += '</form>';
 
         document.getElementById('div-content').innerHTML = html;
     }
 
+}
+
+function getNext() {
+    alert('next');
+}
+
+function getPrevious() {
+    alert('previous');
+}
+
+function skip() {
+    alert('skip');
 }
 
 function submitAnswer(ele){

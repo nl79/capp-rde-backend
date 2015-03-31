@@ -99,6 +99,85 @@ component Survey
         writeOutput(SerializeJSON(output));
     }
 
+    public function actionLoadPrevious() {
+
+        /* get the previous answered question */
+        /* get the request object */
+        var req = super.getRequest();
+
+        /* get the session object */
+        var sess = super.getSession();
+
+        /*
+        get the q_id from the request object.
+        */
+        var q_id = req.getData('q_id');
+
+        if(isDefined('q_id') && isNumeric(q_id)) {
+
+
+            /* get the list of question IDs associated with the current account. */
+            var q_list = sess.getValue('q_id_list');
+
+            /* get the Index of the current question. */
+            var i = ArrayFind(q_list, q_id);
+
+            /*check if a previous question exists in the collection */
+            if(i > 1) {
+
+                var prev_q_id = q_list[i-1];
+
+                writedump(prev_q_id);
+
+            } else {
+                writedump('Displaying first Question');
+            }
+        }
+
+
+
+    }
+
+    public function actionLoadNext() {
+
+        /* get the last answered question
+         extract the ID from the sesion, if the ID is not
+         present in session load it from the database*/
+
+         /* get the session object */
+        var sess = super.getSession();
+
+        /* get the s_code from session. */
+        var q_id = sess.getValue('last_q_id');
+
+        if(!isDefined('q_id') || !isNumeric(q_id)) {
+            /* get the id from  database */
+            q_id = invoke('survey', 'getLast');
+        }
+
+        /* get the list of question ID assocciated with the current account. */
+        var q_list = sess.getValue('q_id_list');
+
+        /* get the Index of the last answerd question in the list. */
+        var i = ArrayFind(q_list, q_id);
+
+        /*check if the there are more IDs in the list and return the questions data.
+        If there are no more, return a survey complete message.
+        */
+        if(arraylen(q_list) > i) {
+
+            var next_q_id = q_list[i+1];
+
+            writedump(next_q_id);
+
+        } else {
+            writedump('finished survey');
+        }
+
+
+
+    }
+
     /*
     start the survey
     */
@@ -138,7 +217,11 @@ component Survey
         /* set the keys array in session */
         sess.putValue('q_id_list', keys);
 
-        writedump(sess.getValue('q_id_list'));
+        /*get the last answered question from the database and store it in session. */
+        var last_q_id = invoke('survey', 'getLast');
+
+        /*store the value in session */
+        sess.putValue('last_q_id', last_q_id);
 
     }
     /*
@@ -226,7 +309,7 @@ component Survey
         }
     }
 
-    
+
     public function getQuestion(q_id) {
 
         if(isNumeric(q_id) && q_id != 0) {
@@ -473,6 +556,9 @@ component Survey
                         updateQuery.addparam(name='q_id', value=q_id, CFSQLTYPE="CF_SQL_INT");
 
                         updateQuery.execute();
+
+                        /* set the question id in the session object */
+                        sess.putValue('last_q_id', q_id);
 
                     }
                 } catch(any exception) {
