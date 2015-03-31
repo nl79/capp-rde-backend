@@ -287,6 +287,23 @@ component Survey
         /*store the value in session */
         sess.putValue('last_q_id', last_q_id);
 
+        //load the question data and display the answers.
+        if(last_q_id > 0) {
+
+            var output = StructNew();
+            output['statusCode'] = 200;
+            output['data'] = invoke('survey', 'getQuestionData', {q_id=last_q_id});
+            output['message'] = 'success';
+
+        } else {
+
+            var output = StructNew();
+            output['statusCode'] = 200;
+            output['data'] = '';
+            output['message'] = "no records found";
+        }
+
+        writeOutput(SerializeJSON(output));
     }
     /*
     @method actionLoadQuestion()
@@ -393,7 +410,7 @@ component Survey
             q.addParam(name = 'q_id', value = q_id, CFSQLTYPE = "CF_SQL_INT");
 
             result = q.execute().getResult();
-            
+
             if (result.recordcount > 0) {
 
                 return result;

@@ -92,10 +92,6 @@ function renderQuestion(resp) {
 
 }
 
-function getNext() {
-    alert('next');
-}
-
 function getQuestion(e) {
 
     /* extract the value of the clicked button element */
@@ -151,7 +147,7 @@ function submitAnswer(ele){
 $(document).ready(function() {
     $('button#button-start-survey').on('click', function(e){
         var settings = {
-            url: '/survey/loadLast',
+            url: '/survey/start',
             type: 'GET',
             data: '',
             dataType: 'json'
