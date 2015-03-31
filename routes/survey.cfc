@@ -99,22 +99,13 @@ component Survey
         writeOutput(SerializeJSON(output));
     }
 
-    public function actionLoadPrevious() {
 
-        /* get the previous answered question */
-        /* get the request object */
-        var req = super.getRequest();
-
-        /* get the session object */
-        var sess = super.getSession();
-
-        /*
-        get the q_id from the request object.
-        */
-        var q_id = req.getData('q_id');
+    public function getPrevious(q_id) {
 
         if(isDefined('q_id') && isNumeric(q_id)) {
 
+            /* get the session object */
+            var sess = super.getSession();
 
             /* get the list of question IDs associated with the current account. */
             var q_list = sess.getValue('q_id_list');
@@ -127,54 +118,127 @@ component Survey
 
                 var prev_q_id = q_list[i-1];
 
-                writedump(prev_q_id);
+                return prev_q_id;
 
             } else {
-                writedump('Displaying first Question');
+
+                return 0;
             }
         }
+    }
 
 
+    public function actionLoadPrevious() {
+
+        /* get the previous answered question */
+        /* get the request object */
+        var req = super.getRequest();
+
+        /*
+        get the q_id from the request object.
+        */
+        var q_id = req.getData('q_id');
+
+        if(isDefined('q_id') && isNumeric(q_id)) {
+
+            var previous_q_id = invoke('survey', 'getPrevious', {q_id=q_id});
+
+            var output = StructNew();
+
+            if(previous_q_id != 0) {
+
+
+                output['statusCode'] = 200;
+                output['data'] = invoke('survey', 'getQuestionData', {q_id=previous_q_id});
+
+                writeoutput(serializeJSON(output));
+            } else {
+                output['statusCode'] = 500;
+            }
+
+        }
 
     }
 
-    public function actionLoadNext() {
+    public function getNext(q_id) {
 
-        /* get the last answered question
-         extract the ID from the sesion, if the ID is not
-         present in session load it from the database*/
-
-         /* get the session object */
+        /* get the session object */
         var sess = super.getSession();
 
-        /* get the s_code from session. */
-        var q_id = sess.getValue('last_q_id');
+        if(isDefined('q_id') && isNumeric(q_id)) {
 
-        if(!isDefined('q_id') || !isNumeric(q_id)) {
-            /* get the id from  database */
-            q_id = invoke('survey', 'getLast');
+            /* get the list of question ID assocciated with the current account. */
+            var q_list = sess.getValue('q_id_list');
+
+            /* get the Index of the last answerd question in the list. */
+            var i = ArrayFind(q_list, q_id);
+
+            /*check if the there are more IDs in the list and return the questions data.
+            If there are no more, return a survey complete message.
+            */
+            if(arraylen(q_list) > i) {
+
+                var next_q_id = q_list[i+1];
+
+                return next_q_id;
+
+            } else {
+                return 0;
+            }
         }
+    }
 
-        /* get the list of question ID assocciated with the current account. */
-        var q_list = sess.getValue('q_id_list');
 
-        /* get the Index of the last answerd question in the list. */
-        var i = ArrayFind(q_list, q_id);
+    public function actionLoadNext() {
 
-        /*check if the there are more IDs in the list and return the questions data.
-        If there are no more, return a survey complete message.
+
+
+        /* get the next question */
+        /* get the request object */
+        var req = super.getRequest();
+
+        /*
+        get the q_id from the request object.
         */
-        if(arraylen(q_list) > i) {
+        var q_id = req.getData('q_id');
 
-            var next_q_id = q_list[i+1];
+        if(isDefined('q_id') && isNumeric(q_id)) {
 
-            writedump(next_q_id);
+            var next_q_id = invoke('survey', 'getNext', {q_id=q_id});
 
-        } else {
-            writedump('finished survey');
+            var output = StructNew();
+
+            if(next_q_id != 0) {
+
+                output['statusCode'] = 200;
+                output['data'] = invoke('survey', 'getQuestionData', {q_id=next_q_id});
+
+                writeoutput(serializeJSON(output));
+            } else {
+                output['statusCode'] = 500;
+                writeoutput(serializeJSON(output));
+            };
+
         }
 
-
+//        /* get the last answered question
+//         extract the ID from the sesion, if the ID is not
+//         present in session load it from the database*/
+//
+//         /* get the session object */
+//        var sess = super.getSession();
+//
+//        /* get the s_code from session. */
+//        var q_id = sess.getValue('last_q_id');
+//
+//        if(!isDefined('q_id') || !isNumeric(q_id)) {
+//            /* get the id from  database */
+//            q_id = invoke('survey', 'getLast');
+//        }
+//
+//        var next_q_id = invoke('survey', 'getNext', {q_id=q_id});
+//
+//        writeDump(next_q_id);
 
     }
 
@@ -314,14 +378,22 @@ component Survey
 
         if(isNumeric(q_id) && q_id != 0) {
 
+
+            /*
             //var q = super.getQuery('SELECT * FROM question_table WHERE entity_id = :q_id');
-            var q = super.getQuery('SELECT *, t2.[type], t3.[type] as data_type FROM question_table as t1, question_type as t2, answer_type as t3
-                                    WHERE t1.entity_id = :q_id AND t1.q_type = t2.entity_id');
+            var q = super.getQuery('SELECT t1.*, t2.[type], t3.[type] as data_type FROM question_table as t1, question_type as t2, answer_type as t3
+                                    WHERE t1.entity_id = :q_id AND t1.q_type = t2.entity_id and t1.a_type = t3.entity_id');
+            */
+
+            var q = super.getQuery('SELECT t1.*, t2.[type], t3.[type] as data_type
+                                    FROM question_table as t1 inner join question_type as t2 on t1.q_type = t2.entity_id left join answer_type as t3
+                                    on t1.a_type = t3.entity_id
+                                    WHERE t1.entity_id = :q_id');
 
             q.addParam(name = 'q_id', value = q_id, CFSQLTYPE = "CF_SQL_INT");
 
             result = q.execute().getResult();
-
+            
             if (result.recordcount > 0) {
 
                 return result;

@@ -2,6 +2,7 @@
 function renderQuestion(resp) {
 
     if(resp.statusCode == 200) {
+        console.log(resp);
         //extract all of the parts.
         var question = resp.data.question[0];
         var options = resp.data.options;
@@ -12,9 +13,9 @@ function renderQuestion(resp) {
 
         //create the form element.
         var html =  '<form id="form-question-data" method="post" action="/survey/submitAnswer">';
-        html += '<input type="hidden" name="q_id" value="' + question.ENTITY_ID + '"/>';
-        html += '<input type="hidden" name="q_type" value="' + question.TYPE.trim() + '"/>';
-        html += '<input type="hidden" name="a_type" value="' + question.A_TYPE + '"/>';
+        html += '<input id="q_id" type="hidden" name="q_id" value="' + question.ENTITY_ID + '"/>';
+        html += '<input id="q_type" type="hidden" name="q_type" value="' + question.TYPE.trim() + '"/>';
+        html += '<input id="a_type" type="hidden" name="a_type" value="' + question.A_TYPE + '"/>';
 
         html += '<p id="p-question">' + resp.data.question[0].QUESTION + '</p>';
 
@@ -69,13 +70,13 @@ function renderQuestion(resp) {
             html += "</textarea><br />";
         }
 
-        html += "<button onclick='getPrevious(this)' " +
+        html += "<button onclick='getQuestion(this)' " +
         "id='button-previous' type='button' name='submit' value='previous'>Prev</button>";
 
         html += "<button onclick='submitAnswer(this)' " +
         "id='button-submit' type='button' name='submit' value='submit'>Submit</button>";
 
-        html += "<button onclick='getNext(this)' " +
+        html += "<button onclick='getQuestion(this)' " +
         "id='button-next' type='button' name='submit' value='next'>Next</button>";
 
 
@@ -95,8 +96,32 @@ function getNext() {
     alert('next');
 }
 
-function getPrevious() {
-    alert('previous');
+function getQuestion(e) {
+
+    /* extract the value of the clicked button element */
+    var action = e.getAttribute('value');
+
+    var url = 'load' + action;
+
+    /* get the current question_id */
+    var q_id = $("input#q_id").val();
+
+    var settings = {
+        url: '/survey/' + url,
+        type: 'POST',
+        data: 'q_id=' + q_id,
+        dataType: 'json'
+    };
+
+    var callback = function(data) {
+
+        if(data && data.statusCode && data.statusCode == 200) {
+
+            renderQuestion(data);
+        }
+    }
+
+    $.ajax(settings).done(callback);
 }
 
 function skip() {
