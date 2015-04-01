@@ -14,11 +14,8 @@ function renderQuestion(resp) {
         //create the form element.
         var html =  '<form id="form-question-data" method="post" action="/survey/submitAnswer">';
         html += '<input id="q_id" type="hidden" name="q_id" value="' + question.ENTITY_ID + '"/>';
-
-        /*
         html += '<input id="q_type" type="hidden" name="q_type" value="' + question.TYPE.trim() + '"/>';
         html += '<input id="a_type" type="hidden" name="a_type" value="' + question.A_TYPE + '"/>';
-        */
 
         html += '<p id="p-question">' + resp.data.question[0].QUESTION + '</p>';
 
@@ -104,10 +101,17 @@ function getQuestion(e) {
 
     /* if the action is next save the current question */
     if(action == 'next') {
-        submitAnswer();
+        if(!submitAnswer()) {
+            alert('Invalid Anwer Supplied');
+            return;
+        }
     }
 
     if(action =='skip') {
+        var q = confirm("Are you Sure you want to skip?");
+
+        if(!q) { return; }
+
         skipQuestion();
         //change the action to 'next' to load the next question
         action = 'next';
@@ -148,7 +152,6 @@ function skipQuestion(e) {
 
     var callback = function(data) {
 
-        console.log('here');
         if(data && data.statusCode && data.statusCode == 200) {
 
 
@@ -164,6 +167,13 @@ function submitAnswer(ele){
     //serialize the form.
     var data = $('form#form-question-data').serialize();
 
+    /* get the question type and validate the answer */
+    var type = $('input#a_type').val();
+
+    console.log(type);
+
+    return true;
+
     var settings = {
         url: '/survey/save',
         type: 'POST',
@@ -176,6 +186,7 @@ function submitAnswer(ele){
     }
 
     $.ajax(settings).done(callback);
+
 
 }
 

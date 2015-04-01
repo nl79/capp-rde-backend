@@ -542,6 +542,7 @@ component Survey
         */
         var answer = req.getData('answer');
 
+        var output = StructNew();
 
         /* validate if the answers is a valid string and attempt to split on ',' */
         if(isDefined('answer') && Compare(getMetadata(answer).getName(), 'java.lang.String') == 0 &&
@@ -659,6 +660,8 @@ component Survey
                 var result = q.execute().getPrefix();
                 var id = result.generatedkey;
                 */
+
+
                 if(valid == true) {
                     writeoutput('success');
                 } else {
@@ -669,9 +672,8 @@ component Survey
             }
         } else {
             /* Invalid answer supplied */
-            writeoutput('no answer supplied');
-
-
+            output['statusCode'] = 500;
+            output['message'] = "Invalid Questions ID Supplied";
         }
     }
 
