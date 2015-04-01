@@ -16,7 +16,7 @@ CREATE TABLE question_type (
 -- type of the answer permitted. EX: int, float, string. 
 CREATE TABLE answer_type (
 	entity_id		int	not null IDENTITY(1,1)	PRIMARY KEY, 
-	[type]			char(7)	not null,
+	[type]			char(15)	not null,
 );
 
 -- Survey table
@@ -84,7 +84,7 @@ VALUES('checkbox'), ('radio'), ('text');
 -- string - string value. 
 -- date - string in a date format.  
 INSERT INTO answer_type ([type]) 
-VALUES('int'), ('float'), ('string'), ('date');
+VALUES('int'), ('float'), ('string'), ('date'), ('currency');
 
 -- Test Survey
 INSERT INTO survey_table (name, [description])
@@ -96,7 +96,9 @@ VALUES('Access to Care: A patient was unable to get an appointment within 48 hou
 2, 3), 
 ('Patient Identification: The wrong chart/medical record was used for a patient.', 2, 3), 
 ('How Many cigarettes does the patient smoke per day', 3, 1), 
-('What Fruit to you like', 1, null); 
+('What Fruit to you like', 1, null),
+('What year did you buy your car', 3, 4),
+('what is your yearly salary', 3, 5); 
 
 -- QUESTIONS 1 OPTIONS
 INSERT INTO option_table([value])
@@ -114,14 +116,18 @@ VALUES(2,1),(2,2),(2,3),(2,4),(2,5),(2,6),(2,7)
 
 -- QUESTION 4 OPTIONS
 INSERT INTO option_table([value])
-VALUES( 'apples'),('peach'),('bannana'),('strawberry'); 
+VALUES( 'apples'),('peach'),('bannana'),('strawberry');
+
 -- link options to the question 
 INSERT INTO question_options_table(q_id, o_id)
 VALUES(4,8),(4,9),(4,10),(4,11); 
 
+
+
+
 -- Link the questions to the survey.
 INSERT INTO survey_question_table (s_id, q_id)
-VALUES(1,1),(1,2),(1,3),(1,4); 
+VALUES(1,1),(1,2),(1,3),(1,4),(1,5);
 
 -- Survey code table link - the survey code will be generated automatically. 
 INSERT INTO survey_code_table (s_code, s_id, tos) 

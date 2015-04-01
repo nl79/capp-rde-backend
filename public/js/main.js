@@ -15,7 +15,7 @@ function renderQuestion(resp) {
         var html =  '<form id="form-question-data" method="post" action="/survey/submitAnswer">';
         html += '<input id="q_id" type="hidden" name="q_id" value="' + question.ENTITY_ID + '"/>';
         html += '<input id="q_type" type="hidden" name="q_type" value="' + question.TYPE.trim() + '"/>';
-        html += '<input id="a_type" type="hidden" name="a_type" value="' + question.A_TYPE + '"/>';
+        html += '<input id="a_type" type="hidden" name="a_type" value="' + question.DATA_TYPE + '"/>';
 
         html += '<p id="p-question">' + resp.data.question[0].QUESTION + '</p>';
 
@@ -48,7 +48,7 @@ function renderQuestion(resp) {
                     "' value='" + options[i].VALUE.trim().replace(',','~') + "'";
 
                     /* check if the value exists in the options list. */
-                    if(list.indexOf(value) != -1) {
+                    if(list && list.indexOf(value) != -1) {
                         html += " checked ";
                     }
 
@@ -102,7 +102,7 @@ function getQuestion(e) {
     /* if the action is next save the current question */
     if(action == 'next') {
         if(!submitAnswer()) {
-            alert('Invalid Anwer Supplied');
+            alert('Invalid Answer Supplied');
             return;
         }
     }
@@ -164,15 +164,68 @@ function skipQuestion(e) {
 
 function submitAnswer(ele){
 
+    var valid = true;
+
+    /* get the question type */
+    var q_type = $('input#q_type').val();
+
+    /*get the answer values */
+    var answers = $("[name='answer']");
+
+    /*based on q_type check if an answer has been selected. */
+    if(q_type == 'radio' || q_type == 'checkbox') {
+
+        /* if the question type is a radio or checkbox
+        loop over all of the answer objects and make sure at least
+        one item is checked.
+         */
+        var checked = false;
+
+        var callback = function(index) {
+            if($(this).is(':checked')) {
+                checked = true;
+            }
+        }
+        answers.each(callback);
+
+        /* if the checked flag is false, no answers has been supplied,
+        return false;
+         */
+        if(checked == false) {
+
+            alert('Please Select an Answer, or Click Skip to skip the question');
+
+            return false;
+        }
+
+    } else if(q_type == 'text') {
+        /* if the answer is a text type, validate that the value of the
+        textarea is not empty.
+         */
+        if($(answers[0]).val() == "") {
+
+            alert('Please Enter an Answer or Select Skip to skip the question');
+
+            return false;
+
+        } else {
+            /* get the answer type and validate the answer */
+            var a_type = $('input#a_type').val();
+
+            /* get the value */ 
+            var value = $(answers[0]).val()
+                ;
+            /* validate that the answer is the correct data type */
+            console.log(a_type);
+
+        }
+
+    }
+    console.log(answers);
+
+
     //serialize the form.
     var data = $('form#form-question-data').serialize();
-
-    /* get the question type and validate the answer */
-    var type = $('input#a_type').val();
-
-    console.log(type);
-
-    return true;
 
     var settings = {
         url: '/survey/save',
@@ -187,7 +240,7 @@ function submitAnswer(ele){
 
     $.ajax(settings).done(callback);
 
-
+    return true;
 }
 
 $(document).ready(function() {
