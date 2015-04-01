@@ -14,8 +14,11 @@ function renderQuestion(resp) {
         //create the form element.
         var html =  '<form id="form-question-data" method="post" action="/survey/submitAnswer">';
         html += '<input id="q_id" type="hidden" name="q_id" value="' + question.ENTITY_ID + '"/>';
+
+        /*
         html += '<input id="q_type" type="hidden" name="q_type" value="' + question.TYPE.trim() + '"/>';
         html += '<input id="a_type" type="hidden" name="a_type" value="' + question.A_TYPE + '"/>';
+        */
 
         html += '<p id="p-question">' + resp.data.question[0].QUESTION + '</p>';
 
@@ -73,15 +76,17 @@ function renderQuestion(resp) {
         html += "<button onclick='getQuestion(this)' " +
         "id='button-previous' type='button' name='submit' value='previous'>Prev</button>";
 
+        /*
         html += "<button onclick='submitAnswer(this)' " +
         "id='button-submit' type='button' name='submit' value='submit'>Submit</button>";
+        */
 
         html += "<button onclick='getQuestion(this)' " +
         "id='button-next' type='button' name='submit' value='next'>Next</button>";
 
 
         html += "<br />" +
-        "<button onclick='skip(this)' id='button-skip' " +
+        "<button onclick='getQuestion(this)' id='button-skip' " +
         "type='button' name='submit' value='skip'>Skip</button>";
 
 
@@ -96,6 +101,17 @@ function getQuestion(e) {
 
     /* extract the value of the clicked button element */
     var action = e.getAttribute('value');
+
+    /* if the action is next save the current question */
+    if(action == 'next') {
+        submitAnswer();
+    }
+
+    if(action =='skip') {
+        skipQuestion();
+        //change the action to 'next' to load the next question
+        action = 'next';
+    }
 
     var url = 'load' + action;
 
@@ -120,8 +136,27 @@ function getQuestion(e) {
     $.ajax(settings).done(callback);
 }
 
-function skip() {
-    alert('skip');
+function skipQuestion(e) {
+    var q_id = $('input#q_id').val();
+
+    var settings = {
+        url: '/survey/skip',
+        type: 'POST',
+        data: 'q_id=' + q_id,
+        dataType: 'json'
+    };
+
+    var callback = function(data) {
+
+        console.log('here');
+        if(data && data.statusCode && data.statusCode == 200) {
+
+
+        }
+    }
+
+    $.ajax(settings).done(callback);
+
 }
 
 function submitAnswer(ele){

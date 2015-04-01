@@ -674,6 +674,80 @@ component Survey
 
         }
     }
+
+    public function actionSkip() {
+
+        /* get the request object */
+        var req = super.getRequest();
+
+        /* get the session object */
+        var sess = super.getSession();
+
+        /*
+        get the answers from the request object.
+        the answer will be a string of numbers
+        if multiple checkbox items were selected.
+        */
+        var q_id = req.getData('q_id');
+
+
+        /* validate if the answers is a valid string and attempt to split on ',' */
+        if(isDefined('q_id') && isNumeric(q_id)) {
+
+            /* get the s_code from session. */
+            var s_code_id = sess.getValue('s_code_id');
+
+            /* check if an answer exists for the current questions.
+             If not, build an insert query.
+             Otherwise return*/
+            var answer = invoke('survey', 'getAnswer', {q_id=q_id});
+
+            if(answer.recordcount == 0) {
+
+                /* build the insert sql */
+                var sql = "INSERT INTO answer_table (q_id, s_code_id, [value])
+                VALUES (:q_id,:s_code_id, NULL)";
+
+                /* execute the query */
+                var q = super.getQuery(sql);
+
+                q.addparam(name='q_id', value=q_id, CFSQLTYPE="CF_SQL_INT");
+                q.addParam(name='s_code_id', value=s_code_id,CFSQLTYPE="CF_SQL_INT");
+
+                var output = structNew();
+
+                try{
+                    var result = q.execute();
+
+                    output['statuCode'] = 200;
+                    output['message'] = "Answer Record Successfully Updated";
+
+                } catch(any exception) {
+
+                    output['statusCode'] = 500;
+                    output['message'] = exception.message;
+
+                }
+                writeoutput(serializeJSON(output));
+            } else {
+
+                var output = StructNew();
+                output['statuCode'] = 200;
+                output['message'] = "Answer Record Already Exists, Skipping";
+
+                writeoutput(serializeJSON(output));
+            }
+
+        } else {
+            var output = StructNew();
+
+            output['statuCode'] = 500;
+            output['message'] = "Invalid Question ID Supplied";
+
+            writeoutput(serializeJSON(output));
+        }
+
+    }
 }
 
 </cfscript>
