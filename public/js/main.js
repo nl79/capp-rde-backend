@@ -1,4 +1,17 @@
 
+/*
+Polyfill  methods
+ */
+Number.isInteger = Number.isInteger || function(value) {
+    return typeof value === "number" &&
+        isFinite(value) &&
+        Math.floor(value) === value;
+};
+
+/********************************************************************************/
+
+
+
 function renderQuestion(resp) {
 
     if(resp.statusCode == 200) {
@@ -164,65 +177,9 @@ function skipQuestion(e) {
 
 function submitAnswer(ele){
 
-    var valid = true;
 
-    /* get the question type */
-    var q_type = $('input#q_type').val();
-
-    /*get the answer values */
-    var answers = $("[name='answer']");
-
-    /*based on q_type check if an answer has been selected. */
-    if(q_type == 'radio' || q_type == 'checkbox') {
-
-        /* if the question type is a radio or checkbox
-        loop over all of the answer objects and make sure at least
-        one item is checked.
-         */
-        var checked = false;
-
-        var callback = function(index) {
-            if($(this).is(':checked')) {
-                checked = true;
-            }
-        }
-        answers.each(callback);
-
-        /* if the checked flag is false, no answers has been supplied,
-        return false;
-         */
-        if(checked == false) {
-
-            alert('Please Select an Answer, or Click Skip to skip the question');
-
-            return false;
-        }
-
-    } else if(q_type == 'text') {
-        /* if the answer is a text type, validate that the value of the
-        textarea is not empty.
-         */
-        if($(answers[0]).val() == "") {
-
-            alert('Please Enter an Answer or Select Skip to skip the question');
-
-            return false;
-
-        } else {
-            /* get the answer type and validate the answer */
-            var a_type = $('input#a_type').val();
-
-            /* get the value */ 
-            var value = $(answers[0]).val()
-                ;
-            /* validate that the answer is the correct data type */
-            console.log(a_type);
-
-        }
-
-    }
-    console.log(answers);
-
+    /* if the data is not valid return false */
+    if(!isValid()) { return false; }
 
     //serialize the form.
     var data = $('form#form-question-data').serialize();
@@ -242,6 +199,119 @@ function submitAnswer(ele){
 
     return true;
 }
+
+function isValid() {
+
+    var valid = true;
+
+    /* get the question type */
+    var q_type = $('input#q_type').val();
+
+    /*get the answer values */
+    var answers = $("[name='answer']");
+
+    /*based on q_type check if an answer has been selected. */
+    if(q_type == 'radio' || q_type == 'checkbox') {
+
+        /* if the question type is a radio or checkbox
+         loop over all of the answer objects and make sure at least
+         one item is checked.
+         */
+        var checked = false;
+
+        var callback = function(index) {
+            if($(this).is(':checked')) {
+                checked = true;
+            }
+        }
+        answers.each(callback);
+
+        /* if the checked flag is false, no answers has been supplied,
+         return false;
+         */
+        if(checked == false) {
+
+            alert('Please Select an Answer, or Click Skip to skip the question');
+
+            return false;
+        }
+
+    } else if(q_type == 'text') {
+        /* if the answer is a text type, validate that the value of the
+         textarea is not empty.
+         */
+        if($(answers[0]).val() == "") {
+
+            alert('Please Enter an Answer or Select Skip to skip the question');
+
+            return false;
+
+        } else {
+            /* get the answer type and validate the answer */
+            var a_type = $('input#a_type').val();
+
+            /* get the value */
+            var value = $(answers[0]).val()
+                ;
+            /* validate that the answer is the correct data type */
+            console.log(a_type);
+            console.log(value);
+            switch (a_type.trim().toLowerCase()) {
+                case 'date':
+
+                    /* try to convert the data into a unit timestamp */
+                    if(isNaN(Date.parse(value))){
+                        alert('Value Must be a valid date.');
+
+                        return false;
+                    }
+
+                    break;
+
+                case 'currency':
+
+                    /* check that the value is a valid number */
+                    if(isNaN(value)) {
+
+                        alert('Value Must be a valid currency amount.');
+
+                        return false;
+                    } else {
+
+                        /* if the value is a valid number, format the answer
+                         and set it back into the field for when its serialized
+                         */
+
+                        $(answers[0]).val(Math.round(value * 100) / 100);
+                    }
+
+                    break;
+                case 'int':
+
+                    if(isNaN(value) || value % 1 != 0) {
+
+                        alert('Value Must be a valid Integer.');
+
+                        return false;
+                    }
+                    break;
+
+                case 'float':
+                    if(isNaN(value)) {
+
+                        alert('Value Must be a valid Number.');
+
+                        return false;
+                    }
+                    break
+            }
+        }
+    }
+    console.log(answers);
+
+    return true;
+}
+
 
 $(document).ready(function() {
     $('button#button-start-survey').on('click', function(e){
