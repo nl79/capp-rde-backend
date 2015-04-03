@@ -13,8 +13,7 @@ component Account
          *redirect to the login page.
          */
 
-        //include "/public/index.html";
-
+        include '/public/index.html';
 
     }
         
@@ -80,7 +79,7 @@ component Account
                 output['type'] = 'redirect';
                 output['url'] = 'survey';
 
-
+                output['JSESSIONID'] = sess.Id;
 
                 /* redirect to the survey index page */
                 //location('/survey');
@@ -105,6 +104,9 @@ component Account
             output['statusCode'] = 401;
             output['type'] = 'error';
             output['message'] = "Survey Code and Term of Service Acknowledgement Required";
+
+            output['cfid'] = sess.Id;
+
 
             //output['session'] = sess.getValue('valid');
 
