@@ -84,7 +84,8 @@ function accountLogin() {
                     /* redirect */
                     var url = data.url.trim();
 
-                    window.location = url + '.html';
+
+                    window.location = url;
 
                     break;
 
