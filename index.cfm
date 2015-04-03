@@ -1,6 +1,11 @@
 <cfscript>
     This.sessionManagement="Yes";
-
+/*
+    response = getPageContext().getResponse();
+    response.setHeader("Access-Control-Allow-Origin","*");
+    response.setHeader("Access-Control-Allow-Methods","GET,PUT,POST,DELETE");
+    response.setHeader("Access-Control-Allow-Headers","Content-Type");
+*/
     //get the value of the valid flag to check if the user is logged in.
     valid = GetPageContext().GetSession().getValue('valid');
 

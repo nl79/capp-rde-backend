@@ -43,7 +43,7 @@ component Survey
             output['statusCode'] = '200';
             output['data'] = super.buildDataObj(result);
             */
-            writedump(SerializeJSON(output));
+            //writedump(SerializeJSON(output));
 
         }
 
@@ -191,8 +191,6 @@ component Survey
 
     public function actionLoadNext() {
 
-
-
         /* get the next question */
         /* get the request object */
         var req = super.getRequest();
@@ -210,16 +208,24 @@ component Survey
 
             if(next_q_id != 0) {
 
+                output['type'] = 'data';
                 output['statusCode'] = 200;
                 output['data'] = invoke('survey', 'getQuestionData', {q_id=next_q_id});
 
-                writeoutput(serializeJSON(output));
             } else {
-                output['statusCode'] = 500;
-                writeoutput(serializeJSON(output));
-            };
 
+                output['statusCode'] = 204;
+                output['type'] = 'message';
+                output['message'] = "No Records Found";
+            };
+        } else {
+
+            output['statusCode'] = 400 ;
+            output['type'] = 'error';
+            output['message'] = "Invalid Question ID supplied";
         }
+
+        writeoutput(serializeJSON(output));
 
 //        /* get the last answered question
 //         extract the ID from the sesion, if the ID is not
@@ -245,8 +251,10 @@ component Survey
     /*
     start the survey
     */
-    public function actionStart()
-    {
+    public function actionStart() {
+        /* output structure */
+        var output = StructNew();
+
         /* get the request object */
         var req = super.getRequest();
 
@@ -287,17 +295,15 @@ component Survey
         /*store the value in session */
         sess.putValue('last_q_id', last_q_id);
 
-        //load the question data and display the answers.
+        //load the question data for the next question in the list and display the answers.
         if(last_q_id > 0) {
 
-            var output = StructNew();
             output['statusCode'] = 200;
             output['data'] = invoke('survey', 'getQuestionData', {q_id=last_q_id});
             output['message'] = 'success';
 
         } else {
 
-            var output = StructNew();
             output['statusCode'] = 200;
             output['data'] = '';
             output['message'] = "no records found";
@@ -305,6 +311,7 @@ component Survey
 
         writeOutput(SerializeJSON(output));
     }
+
     /*
     @method actionLoadQuestion()
     @description - loads the question and answer data for the supplied question id.
@@ -651,30 +658,27 @@ component Survey
                         sess.putValue('last_q_id', q_id);
 
                     }
+
+                    output['statusCode'] = 200;
+                    output['type'] = 'message';
+                    output['message'] = 'Answer Saved Successfully';
+
                 } catch(any exception) {
-                    writeoutput(exeption.message);
+
+                    output['statusCode'] = 500;
+                    output['type'] = 'error';
+                    output['message'] = exeption.message;
+
                     valid = false;
                 }
-
-                /*
-                var result = q.execute().getPrefix();
-                var id = result.generatedkey;
-                */
-
-
-                if(valid == true) {
-                    writeoutput('success');
-                } else {
-                    writeoutput('failed');
-                }
-
-
             }
         } else {
             /* Invalid answer supplied */
             output['statusCode'] = 500;
             output['message'] = "Invalid Questions ID Supplied";
         }
+
+        writeoutput(serializeJSON(output));
     }
 
     public function actionSkip() {

@@ -41,8 +41,6 @@ component Account
 	    //get the terms of service status
 	    var tos = req.getData('tos');
 
-        writedump(s_code);
-	    
         /*
 	     *validate the users survey code
 	     *and the Terms of service flag
@@ -107,12 +105,26 @@ component Account
 
             writeoutput(SerializeJSON(msg));
         }
-
-
     }
 	
 	function actionLogout() {
-	    
+        /* get the session object */
+        var sess = super.getSession();
+
+        //set the valid flag to false.
+
+        sess.putValue('valid', true);
+        sess.putValue('s_code_id', "");
+        sess.putValue('s_code', "");
+        sess.putValue('s_id', "");
+
+        var output = StructNew();
+
+        output['statucCode'] = 200;
+        output['type'] = 'message';
+        output['message'] = "Logout Successfull";
+
+        writeoutput(SerializeJSON(output));
 	}
 }
 

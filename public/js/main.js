@@ -15,7 +15,7 @@ Number.isInteger = Number.isInteger || function(value) {
 function renderQuestion(resp) {
 
     if(resp.statusCode == 200) {
-        console.log(resp);
+
         //extract all of the parts.
         var question = resp.data.question[0];
         var options = resp.data.options;
@@ -77,7 +77,7 @@ function renderQuestion(resp) {
             html += "<textarea class='text' name='answer'>";
             if(answer && answer.length && answer.length > 0) {
 
-                html += answer[0].VALUE.trim();
+                html += answer[0].VALUE;
             }
 
             html += "</textarea><br />";
@@ -114,10 +114,8 @@ function getQuestion(e) {
 
     /* if the action is next save the current question */
     if(action == 'next') {
-        if(!submitAnswer()) {
-            alert('Invalid Answer Supplied');
-            return;
-        }
+
+        if(!submitAnswer()) { return; }
     }
 
     if(action =='skip') {
@@ -144,9 +142,20 @@ function getQuestion(e) {
 
     var callback = function(data) {
 
-        if(data && data.statusCode && data.statusCode == 200) {
+        if(data && data.statusCode) {
+            switch(parseInt(data.statusCode)){
+                case 200:
+                    renderQuestion(data);
+                    break;
 
-            renderQuestion(data);
+                case 204:
+                    finished(data);
+                    break;
+
+                case 400:
+                    error(data);
+                    break;
+            }
         }
     }
 
@@ -165,9 +174,20 @@ function skipQuestion(e) {
 
     var callback = function(data) {
 
-        if(data && data.statusCode && data.statusCode == 200) {
+        if(data && data.statusCode) {
 
+            if(data && data.statusCode) {
 
+                switch(parseInt(data.statusCode)){
+                    case 200:
+
+                        break;
+
+                    case 400:
+                        error(data);
+                        break;
+                }
+            }
         }
     }
 
@@ -192,7 +212,24 @@ function submitAnswer(ele){
     };
 
     var callback = function(data) {
-        console.log(data);
+
+
+
+        if(data && data.statusCode) {
+            switch(parseInt(data.statusCode)){
+                case 200:
+                    message(data);
+                    break;
+
+                case 204:
+                    finished(data);
+                    break;
+
+                case 400:
+                    error(data);
+                    break;
+            }
+        }
     }
 
     $.ajax(settings).done(callback);
@@ -251,11 +288,9 @@ function isValid() {
             var a_type = $('input#a_type').val();
 
             /* get the value */
-            var value = $(answers[0]).val()
-                ;
+            var value = $(answers[0]).val();
+
             /* validate that the answer is the correct data type */
-            console.log(a_type);
-            console.log(value);
             switch (a_type.trim().toLowerCase()) {
                 case 'date':
 
@@ -307,12 +342,39 @@ function isValid() {
             }
         }
     }
-    console.log(answers);
 
     return true;
 }
 
+function logout() {
+    var q = prompt("Confirm Logout");
 
+    if(q) {
+        /* ajax call to the logout action */
+        console.log('logging out');
+    }
+}
+
+function config() {
+
+}
+
+function login() {
+
+}
+
+function finished() {
+    alert('survey finished');
+}
+
+function message(data) {
+    console.log(data.message);
+    $('p#p-message').text(data.message);
+}
+
+function error(data) {
+
+}
 $(document).ready(function() {
     $('button#button-start-survey').on('click', function(e){
         var settings = {
@@ -327,6 +389,8 @@ $(document).ready(function() {
         }
 
         $.ajax(settings).done(callback);
+    });
 
-    })
+
+    $('button#button-logout').on('click', logout);
 })
