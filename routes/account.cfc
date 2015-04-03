@@ -28,6 +28,8 @@ component Account
         
     function actionLogin() {
 
+        var output = StructNew();
+
 	    /* get the session object */
 	    var sess = super.getSession();
 	    
@@ -73,23 +75,23 @@ component Account
                 //set the valid flag to true.
                 sess.putValue('valid', true);
 
+                output['statusCode'] = 302;
+                output['type'] = 'redirect';
+                output['url'] = 'survey';
 
                 /* redirect to the survey index page */
-                location('/survey');
-                exit;
+                //location('/survey');
+                //sexit;
 
             } else {
 		    
                 /*
                 *return a json object with an error message.
                 */
-                var msg = StructNew();
 
-                msg.type  = "error";
-                msg.message = "Survey Code is Invalid";
-                msg.statusCode = 401;
-
-                writeoutput(SerializeJSON(msg));
+                output['statusCode'] = 401;
+                output['type'] = 'error';
+                output['message'] = 'Survey Code is Invalid';
 		    
 		    }
 		    
@@ -97,16 +99,17 @@ component Account
             /*
              *return a json object with an error message.
              */
-            var msg = StructNew();
+            output['statusCode'] = 401;
+            output['type'] = 'error';
+            output['message'] = "Survey Code and Term of Service Acknowledgement Required";
 
-            msg.type  = "error";
-            msg.message = "Survey Code and Term of Service Acknowledgement Required";
-            msg.statusCode = 401;
-
-            writeoutput(SerializeJSON(msg));
         }
+
+        writeoutput(SerializeJSON(output));
     }
-	
+
+
+
 	function actionLogout() {
         /* get the session object */
         var sess = super.getSession();
