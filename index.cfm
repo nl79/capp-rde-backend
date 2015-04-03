@@ -9,6 +9,7 @@
     //get the value of the valid flag to check if the user is logged in.
     valid = GetPageContext().GetSession().getValue('valid');
 
+    writedump("wtf");
 
     objRequest = GetPageContext().GetRequest(); 
     strUrl = objRequest.GetRequestUrl();
