@@ -41,8 +41,8 @@ function renderQuestion(resp) {
         var answers = [];
 
         //create the form element.
-        var html =  '<div class="" action="#">' +
-            '<form  class="form-horizontal" id="form-question-data" method="post" action="/survey/submitAnswer">';
+        var html =  '<div class="text-center" action="#">' +
+            '<form  class="form-horizontal text-" id="form-question-data" method="post" action="/survey/submitAnswer">';
         html += '<input id="q_id" type="hidden" name="q_id" value="' + question.ENTITY_ID + '"/>';
         html += '<input id="q_type" type="hidden" name="q_type" value="' + question.TYPE.trim() + '"/>';
         html += '<input id="a_type" type="hidden" name="a_type" value="' + question.DATA_TYPE + '"/>';
