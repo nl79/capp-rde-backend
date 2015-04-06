@@ -130,9 +130,15 @@ component Account
 
         var output = StructNew();
 
+        /*
         output['statucCode'] = 200;
         output['type'] = 'message';
         output['message'] = "Logout Successfull";
+    */
+        output['statusCode'] = 302;
+        output['type'] = 'redirect';
+        outout['message'] = 'Log Out Successful';
+        output['url'] = "index";
 
         writeoutput(SerializeJSON(output));
 	}
