@@ -47,7 +47,7 @@ component Account
 	     *validate the users survey code
 	     *and the Terms of service flag
 	     */
-	    if(len(s_code) > 0) {
+	    if(len(s_code) > 0 && len(tos) > 0) {
 
             //query the database
             var q = new Query();

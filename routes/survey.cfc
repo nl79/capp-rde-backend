@@ -298,15 +298,25 @@ component Survey
         //load the question data for the next question in the list and display the answers.
         if(last_q_id > 0) {
 
+
             output['statusCode'] = 200;
+            output['type'] = 'data';
             output['data'] = invoke('survey', 'getQuestionData', {q_id=last_q_id});
             output['message'] = 'success';
+
+            /*add the list of question keys to the data */
+            output['data']['keys'] = keys;
+
 
         } else {
 
             output['statusCode'] = 200;
+            output['type'] = 'message';
             output['data'] = '';
             output['message'] = "no records found";
+
+            /*add the list of question keys to the data */
+            output['data']['keys'] = keys;
         }
 
         writeOutput(SerializeJSON(output));
