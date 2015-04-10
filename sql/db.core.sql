@@ -32,7 +32,7 @@ CREATE TABLE survey_code_table(
     s_code			char(8)			not null, 
     s_id            int             not null        FOREIGN KEY REFERENCES survey_table(entity_id),
     tos             int             null,		-- a flag that records if terms of service was accepted.
-    [last]          int             not null        default 1   --the last question in the list the user answered. 
+    [last]          int             not null        default 0   --the last question in the list the user answered. 
 ); 
 
 CREATE TABLE question_table(
@@ -76,7 +76,7 @@ CREATE TABLE question_options_table(
 -- radio - one answer selection permitted. 
 -- text - open ended answer. 
 INSERT INTO question_type ([type]) 
-VALUES('checkbox'), ('radio'), ('text'); 
+VALUES('checkbox'), ('radio'), ('text'), ('date'),('bigtext');
 
 -- Default answer types
 -- int - numeric value
@@ -97,8 +97,9 @@ VALUES('Access to Care: A patient was unable to get an appointment within 48 hou
 ('Patient Identification: The wrong chart/medical record was used for a patient.', 2, 3), 
 ('How Many cigarettes does the patient smoke per day', 3, 1), 
 ('What Fruit to you like', 1, null),
-('What year did you buy your car', 3, 4),
-('what is your yearly salary', 3, 5); 
+('What year did you buy your car', 4, 4),
+('what is your yearly salary', 4, 5),
+('Describe How you feel about Apples.', 5, 3);
 
 -- QUESTIONS 1 OPTIONS
 INSERT INTO option_table([value])

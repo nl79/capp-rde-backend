@@ -298,7 +298,6 @@ component Survey
         //load the question data for the next question in the list and display the answers.
         if(last_q_id > 0) {
 
-
             output['statusCode'] = 200;
             output['type'] = 'data';
             output['data'] = invoke('survey', 'getQuestionData', {q_id=last_q_id});
@@ -310,13 +309,25 @@ component Survey
 
         } else {
 
-            output['statusCode'] = 200;
-            output['type'] = 'message';
-            output['data'] = '';
-            output['message'] = "no records found";
+            if(arraylen(keys) > 0) {
+
+                /* load the first question from the list */
+                output['statusCode'] = 200;
+                output['type'] = 'data';
+                output['data'] = invoke('survey', 'getQuestionData', {q_id=keys[1]});
+                output['message'] = 'success';
+
+            } else {
+
+                output['statusCode'] = 200;
+                output['type'] = 'message';
+                output['data'] = structNew();
+                output['message'] = "no records found";
+            }
 
             /*add the list of question keys to the data */
             output['data']['keys'] = keys;
+
         }
 
         writeOutput(SerializeJSON(output));
@@ -616,6 +627,9 @@ component Survey
                             sql &= "'" & arrayToList(parts, '|') & "'";
                                 break;
                         case "text":
+                        case "date":
+                        case "bigtext":
+
                             sql &= "'" & parts[1] & "'";
                                 break;
                     }
@@ -636,6 +650,9 @@ component Survey
                                 sql &= "'" & arrayToList(parts, '|') & "'";
                                     break;
                             case "text":
+                            case "date":
+                            case "bigtext":
+
                                 sql &= "'" & parts[1] & "'";
                                     break;
                         }
@@ -643,6 +660,7 @@ component Survey
                         sql &= ")";
                     }
                 }
+
 
                 /* build the query object */
                 var q = super.getQuery(sql);
@@ -677,7 +695,7 @@ component Survey
 
                     output['statusCode'] = 500;
                     output['type'] = 'error';
-                    output['message'] = exeption.message;
+                    output['message'] = exception.message;
 
                     valid = false;
                 }
