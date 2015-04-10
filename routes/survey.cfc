@@ -652,8 +652,10 @@ component Survey
                             case "text":
                             case "date":
                             case "bigtext":
+                                /* extract the value and truncate it to 254 maximum characters */
+                                var value = mid(parts[1], 1, 254);
 
-                                sql &= "'" & parts[1] & "'";
+                                sql &= "'" & value & "'";
                                     break;
                         }
 

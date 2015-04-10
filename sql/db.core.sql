@@ -54,7 +54,7 @@ CREATE TABLE answer_table(
 	entity_id	int					not null		IDENTITY(1,1)	PRIMARY KEY, 
 	q_id		int					not null		FOREIGN KEY REFERENCES question_table(entity_id),
     s_code_id   int					not null        FOREIGN KEY REFERENCES survey_code_table(entity_id),
-	value		varchar(150)		null 
+	value		varchar(255)		null 
 );
 
 CREATE TABLE survey_question_table(
@@ -98,7 +98,7 @@ VALUES('Access to Care: A patient was unable to get an appointment within 48 hou
 ('How Many cigarettes does the patient smoke per day', 3, 1), 
 ('What Fruit to you like', 1, null),
 ('What year did you buy your car', 4, 4),
-('what is your yearly salary', 4, 5),
+('what is your yearly salary', 3,2),
 ('Describe How you feel about Apples.', 5, 3);
 
 -- QUESTIONS 1 OPTIONS
@@ -128,7 +128,7 @@ VALUES(4,8),(4,9),(4,10),(4,11);
 
 -- Link the questions to the survey.
 INSERT INTO survey_question_table (s_id, q_id)
-VALUES(1,1),(1,2),(1,3),(1,4),(1,5);
+VALUES(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7);
 
 -- Survey code table link - the survey code will be generated automatically. 
 INSERT INTO survey_code_table (s_code, s_id, tos) 
