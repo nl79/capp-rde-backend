@@ -755,7 +755,7 @@ component Survey
                 try{
                     var result = q.execute();
 
-                    output['statuCode'] = 200;
+                    output['statusCode'] = 200;
                     output['message'] = "Answer Record Successfully Updated";
 
                 } catch(any exception) {
@@ -768,7 +768,7 @@ component Survey
             } else {
 
                 var output = StructNew();
-                output['statuCode'] = 200;
+                output['statusCode'] = 200;
                 output['message'] = "Answer Record Already Exists, Skipping";
 
                 writeoutput(serializeJSON(output));
@@ -777,7 +777,7 @@ component Survey
         } else {
             var output = StructNew();
 
-            output['statuCode'] = 500;
+            output['statusCode'] = 500;
             output['message'] = "Invalid Question ID Supplied";
 
             writeoutput(serializeJSON(output));
