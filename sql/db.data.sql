@@ -118,7 +118,7 @@ VALUES('Under 18 Years old'), ('18-24 Years Old'), ('25-34 Years Old'), ('35-44 
 ('55-64 Years Old'),('65-74 Years Old'),('75 Years or Older'); 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(2,4),(2,5),(2,6),(2,7),(2,8),(2,9),(2,10); 
+VALUES(2,4),(2,5),(2,6),(2,7),(2,8),(2,9),(2,10),(2,11); 
 
 -- QUESTION 3 OPTIONS
 INSERT INTO option_table([value])
@@ -127,7 +127,7 @@ VALUES( 'White'),('Hispanic or Latino'),('Black or African American'),('Native A
 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(3,11),(3,12),(3,13),(3,14);
+VALUES(3,12),(3,13),(3,14),(3,15),(3,16),(3,17);
 
 -- QUESTION 4 OPTIONS
 INSERT INTO option_table([value])
@@ -135,7 +135,7 @@ VALUES( 'Android'),('iOS'),('Windows');
 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(4,15),(4,16),(4,17); 
+VALUES(4,18),(4,19),(4,20); 
 
 -- QUESTION 5 OPTIONS
 INSERT INTO option_table([value])
@@ -144,7 +144,7 @@ VALUES( 'Very unappealing'),('Somewhat unappealing'),('Average'),('Somewhat appe
 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(5,18),(5,19),(5,20),(5,21),(5,22),(5,23);  
+VALUES(5,21),(5,22),(5,23),(5,24),(5,25),(5,26);  
 
 -- QUESTION 6 OPTIONS (Text)
 
@@ -155,24 +155,25 @@ VALUES( 'Yes'),('No');
 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(7,24),(7,25); 
-
+VALUES(7,27),(7,28); 
 
 -- QUESTION 8 OPTIONS
+
+-- QUESTION 9 OPTIONS
 INSERT INTO option_table([value])
-VALUES( '1'),('2'),( '3'),('4'),( '5'),('6'),( '7'),('8'),( '9'),('10');
+VALUES( '1'),('2'),( '3'),('4'),( '5'),('6'),('7'),('8'),('9'),('10');
 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(8,26),(8,27), (8,28),(8,29),(8,30),(8,31),(8,32),(8,33),(8,34),(8,35); 
-
--- QUESTION 9 OPTIONS
+VALUES(9,29),(9,30),(9,31),(9,32),(9,33),(9,34),(9,35),(9,36),(9,37),(9,38); 
 
 -- QUESTION 10 OPTIONS
 
+-- QUESTION 11 OPTIONS
+
 -- Link the questions to the survey.
 INSERT INTO survey_question_table (s_id, q_id)
-VALUES(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9);
+VALUES(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10),(1,11);
 
 -- Survey code table link - the survey code will be generated automatically.
 INSERT INTO survey_code_table (s_code, s_id, tos)

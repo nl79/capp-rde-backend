@@ -262,21 +262,30 @@ component Survey
         var sess = super.getSession();
 
         /* get the s_code from session. */
-        var s_code_id = sess.getValue('s_code_id');
+        //var s_code_id = sess.getValue('s_code_id');
+        var s_id = sess.getValue('s_id');
 
         /*
         query the database and get a list of all question
         entity_ids that are associated with the current survey id.
         */
 
+        /*
         var q = super.getQuery('SELECT t1.q_id ' &
         ' FROM survey_question_table as t1' &
         ' WHERE t1.s_id= :s_code_id');
 
+
         q.addParam(name = 's_code_id', value = s_code_id, CFSQLTYPE = "CF_SQL_INT");
+        */
 
+        var q = super.getQuery('SELECT t1.q_id ' &
+        ' FROM survey_question_table as t1' &
+        ' WHERE t1.s_id= :s_id');
+
+        q.addParam(name = 's_id', value = s_id, CFSQLTYPE = "CF_SQL_INT");
         result = q.execute().getResult();
-
+        
         if (result.recordcount > 0) {
 
             var keys = [];
