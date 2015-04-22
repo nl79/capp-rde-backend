@@ -285,7 +285,7 @@ component Survey
 
         q.addParam(name = 's_id', value = s_id, CFSQLTYPE = "CF_SQL_INT");
         result = q.execute().getResult();
-        
+
         if (result.recordcount > 0) {
 
             var keys = [];
@@ -478,7 +478,6 @@ component Survey
         result = q.execute().getResult();
 
         return result;
-
     }
 
     public function getOptions(q_id) {
@@ -671,7 +670,6 @@ component Survey
                         sql &= ")";
                     }
                 }
-
 
                 /* build the query object */
                 var q = super.getQuery(sql);

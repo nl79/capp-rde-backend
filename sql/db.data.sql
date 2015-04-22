@@ -94,11 +94,12 @@ VALUES ('RDE App Survey', 'RDE-Test Survey');
 INSERT INTO question_table(question, q_type, a_type)
 VALUES('I identify myself as?', 2, 3),
 ('What is your age?', 2, 3),
+('What is your date of birth', 4,4),
 ('Ethnicity origin (or Race): Please specify your ethnicity', 2,3), 
-('Which mobile device are you taking using this application on?', 2, 3), 
+('Which mobile device are you using this application on?', 2, 3), 
 ('Would you say our application color scheme is appealing?', 2, 3), 
 ('If you could choose a color scheme what would it be?', 3, 3), 
-('Would you use this application again?',2,3), 
+('I would use this application again.',2,3), 
 ('How would you describe this application in one or more words?', 5, 3), 
 ('If you were to review this application what score would you give out of ten? 1 being the lowest.', 2,3), 
 ('What do you find most frustrating about this application?', 5,3), 
@@ -112,7 +113,9 @@ VALUES('Male'), ('Female'), ('Other');
 INSERT INTO question_options_table(q_id, o_id)
 VALUES(1,1),(1,2),(1,3);
 
--- QUESTIONS 2 OPTIONS
+
+
+-- QUESTIONS 3 OPTIONS
 INSERT INTO option_table([value])
 VALUES('Under 18 Years old'), ('18-24 Years Old'), ('25-34 Years Old'), ('35-44 Years Old'),('45-54 Years Old'), 
 ('55-64 Years Old'),('65-74 Years Old'),('75 Years or Older'); 
@@ -120,60 +123,63 @@ VALUES('Under 18 Years old'), ('18-24 Years Old'), ('25-34 Years Old'), ('35-44 
 INSERT INTO question_options_table(q_id, o_id)
 VALUES(2,4),(2,5),(2,6),(2,7),(2,8),(2,9),(2,10),(2,11); 
 
--- QUESTION 3 OPTIONS
+
+-- QUESTION 2 OPTIONS (date)
+
+-- QUESTION 4 OPTIONS
 INSERT INTO option_table([value])
 VALUES( 'White'),('Hispanic or Latino'),('Black or African American'),('Native American or American Indian'), 
 ('Asian / Pacific Islander'),('Other');
 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(3,12),(3,13),(3,14),(3,15),(3,16),(3,17);
+VALUES(4,12),(4,13),(4,14),(4,15),(4,16),(4,17);
 
--- QUESTION 4 OPTIONS
+-- QUESTION 5 OPTIONS
 INSERT INTO option_table([value])
 VALUES( 'Android'),('iOS'),('Windows');
 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(4,18),(4,19),(4,20); 
+VALUES(5,18),(5,19),(5,20); 
 
--- QUESTION 5 OPTIONS
+-- QUESTION 6 OPTIONS
 INSERT INTO option_table([value])
 VALUES( 'Very unappealing'),('Somewhat unappealing'),('Average'),('Somewhat appealing'),
 ('Very appealing'),('Other');
 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(5,21),(5,22),(5,23),(5,24),(5,25),(5,26);  
+VALUES(6,21),(6,22),(6,23),(6,24),(6,25),(6,26);  
 
--- QUESTION 6 OPTIONS (Text)
+-- QUESTION 7 OPTIONS (Text)
 
 
--- QUESTION 7 OPTIONS
+-- QUESTION 8 OPTIONS
 INSERT INTO option_table([value])
-VALUES( 'Yes'),('No');
+VALUES( 'true'),('false');
 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(7,27),(7,28); 
-
--- QUESTION 8 OPTIONS
+VALUES(8,27),(8,28); 
 
 -- QUESTION 9 OPTIONS
+
+-- QUESTION 10 OPTIONS
 INSERT INTO option_table([value])
 VALUES( '1'),('2'),( '3'),('4'),( '5'),('6'),('7'),('8'),('9'),('10');
 
 -- link options to the question
 INSERT INTO question_options_table(q_id, o_id)
-VALUES(9,29),(9,30),(9,31),(9,32),(9,33),(9,34),(9,35),(9,36),(9,37),(9,38); 
-
--- QUESTION 10 OPTIONS
+VALUES(10,29),(10,30),(10,31),(10,32),(10,33),(10,34),(10,35),(10,36),(10,37),(10,38); 
 
 -- QUESTION 11 OPTIONS
 
+-- QUESTION 12 OPTIONS
+
 -- Link the questions to the survey.
 INSERT INTO survey_question_table (s_id, q_id)
-VALUES(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10),(1,11);
+VALUES(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10),(1,11),(1,12);
 
 -- Survey code table link - the survey code will be generated automatically.
 INSERT INTO survey_code_table (s_code, s_id, tos)
