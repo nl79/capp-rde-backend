@@ -1,5 +1,11 @@
 <cfscript>
 
+/*
+ *@component Survey
+ *@extends _base_route
+ *@description Survey routes object that handles various actions by the user.
+ */
+
 component Survey
 	output="false"
 	extends="_base_route"
@@ -28,51 +34,29 @@ component Survey
 
         if(result.recordcount > 0) {
 
-
+            /*
+             *if the database has question assocciated with the supplied survey code.
+             *extract the keys and store them as an array
+             */
             var keys = [];
             for(var i = 1; i <= result.recordcount; i++){
                 keys[i] = result['q_id'][i];
             }
 
+            /* Create a new structure and store the keys */
             var output = StructNew();
             output['statusCode'] = '200';
             output['data'] = keys;
 
-            /*
-            var output = structNew();
-            output['statusCode'] = '200';
-            output['data'] = super.buildDataObj(result);
-            */
-            //writedump(SerializeJSON(output));
-
         }
 
-
-
-        //writeDump(super.buildDataObj(result));
-
-
+        /*
+         *Fallback action if the request was not performed by the front-end phonegap
+         *application.
+         *The system will load the survey page and allow the users to take the survey via a browser.
+         */
         include "/public/survey.html";
-	    //writedump(SerializeJSON(result)); 
-	    
-        }
-        
-    function actionDefault() {
-            
     }
-	
-	/*
-	 *@method actionTos() - updates the terms of service field
-	 *@param s_code - survey code required
-	 */ 
-	function actionTos() {
-	     /* get the session object */
-	    var sess = super.getSession();
-	    
-	    /* get the s_code from session. */
-	    var s_code = sess.getValue('s_code');
-	}
-
 
     /*
     @method actionLoadLast();
@@ -80,26 +64,40 @@ component Survey
     */
     function actionLoadLast() {
 
+        /* call the getLast to get the ID of the last answered question */
         var q_id = invoke('survey', 'getLast');
 
         if(q_id > 0) {
 
+            /* if successful, load the question data for the given last ID and
+             * return a json object with the question data
+             */
             var output = StructNew();
             output['statusCode'] = 200;
             output['data'] = invoke('survey', 'getQuestionData', {q_id=q_id});
             output['message'] = 'success';
 
         } else {
+
+            /* return a json object with a message indicating that no questions were
+             * found in the database
+             */
             var output = StructNew();
             output['statusCode'] = 200;
+            output['type'] = 'info';
             output['data'] = '';
-            output['message'] = "no records found";
+            output['info'] = "no records found";
         }
 
         writeOutput(SerializeJSON(output));
     }
 
 
+    /*
+     *@method getPrevious - get the question from the list that comes before the question with the supplied id.
+     *@param integer q_id - ID of the current question.
+     *@return integer id - returns a question ID as integer
+     */
     public function getPrevious(q_id) {
 
         if(isDefined('q_id') && isNumeric(q_id)) {
@@ -116,18 +114,21 @@ component Survey
             /*check if a previous question exists in the collection */
             if(i > 1) {
 
-                var prev_q_id = q_list[i-1];
-
-                return prev_q_id;
+                return q_list[i-1];
 
             } else {
 
+                /* if no previous ID, return 0 */
                 return 0;
             }
         }
     }
 
-
+    /*
+     *@method actionLoadPrevious() - Handles the loadprevious event issues by the front-end applications.
+     *@description - if the previous question id is not 0, loads the question data and returns a json object.
+     *@return String json - returns a json string representing a response.
+     */
     public function actionLoadPrevious() {
 
         /* get the previous answered question */
@@ -139,27 +140,44 @@ component Survey
         */
         var q_id = req.getData('q_id');
 
+        /* output structure */
+        var output = StructNew();
+
+        /* validate that the q_id was set and is a valid number */
         if(isDefined('q_id') && isNumeric(q_id)) {
 
+            /* get the ID of the previous question in the list */
             var previous_q_id = invoke('survey', 'getPrevious', {q_id=q_id});
-
-            var output = StructNew();
 
             if(previous_q_id != 0) {
 
-
                 output['statusCode'] = 200;
+                output['type'] = 'data';
                 output['data'] = invoke('survey', 'getQuestionData', {q_id=previous_q_id});
 
-                writeoutput(serializeJSON(output));
             } else {
-                output['statusCode'] = 500;
+
+                output['statusCode'] = 404;
+                output['type'] = 'info';
+                output['info'] = 'No Previous Questions Found';
             }
 
+        } else {
+
+            output['statusCode'] = 500;
+            output['type'] = 'error';
+            output['error'] = 'Invalid Question ID Supplied';
         }
+
+        writeoutput(serializeJSON(output));
 
     }
 
+    /*
+     *@method getNext()
+     *@description - Get the next question ID from the list.
+     *@return Integer ID - returns a question id as number or 0 if nothing found.
+     */
     public function getNext(q_id) {
 
         /* get the session object */
@@ -178,22 +196,28 @@ component Survey
             */
             if(arraylen(q_list) > i) {
 
-                var next_q_id = q_list[i+1];
-
-                return next_q_id;
+                return q_list[i+1];
 
             } else {
+
                 return 0;
             }
         }
     }
 
-
+    /*
+     *@method actionLoadNext() - Handles the loadnext event issues by the front-end applications.
+     *@description - if the next question id is not 0, loads the question data and returns a json object.
+     *@return String json - returns a json string representing a response.
+     */
     public function actionLoadNext() {
 
         /* get the next question */
         /* get the request object */
         var req = super.getRequest();
+
+        /* get the session object */
+        var sess = super.getSession();
 
         /*
         get the q_id from the request object.
@@ -206,51 +230,51 @@ component Survey
 
             var output = StructNew();
 
+            /* get the list of question ID assocciated with the current account.
+             * in order to validate if the id is the last question in the list
+             */
+            var q_list = sess.getValue('q_id_list');
+
+            /* get the Index of the current question in the list. */
+            /*
+            var i = ArrayFind(q_list, q_id);
+            writeoutput(arraylen(q_list));
+            writeoutput("index: " & i);
+            */
+
             if(next_q_id != 0) {
 
                 output['type'] = 'data';
                 output['statusCode'] = 200;
                 output['data'] = invoke('survey', 'getQuestionData', {q_id=next_q_id});
 
+            } else if(ArrayFind(q_list, q_id) == arraylen(q_list)) {
+
+                /* redirect */
+                output['type'] = 'info';
+                output['statusCode'] = 204;
+                output['info'] = 'Survey Complete';
+
             } else {
 
-                output['statusCode'] = 204;
-                output['type'] = 'message';
-                output['message'] = "No Records Found";
+                output['statusCode'] = 404;
+                output['type'] = 'info';
+                output['info'] = "No Records Found";
             };
         } else {
 
             output['statusCode'] = 400 ;
             output['type'] = 'error';
-            output['message'] = "Invalid Question ID supplied";
+            output['error'] = "Invalid Question ID supplied";
         }
 
         writeoutput(serializeJSON(output));
-
-//        /* get the last answered question
-//         extract the ID from the sesion, if the ID is not
-//         present in session load it from the database*/
-//
-//         /* get the session object */
-//        var sess = super.getSession();
-//
-//        /* get the s_code from session. */
-//        var q_id = sess.getValue('last_q_id');
-//
-//        if(!isDefined('q_id') || !isNumeric(q_id)) {
-//            /* get the id from  database */
-//            q_id = invoke('survey', 'getLast');
-//        }
-//
-//        var next_q_id = invoke('survey', 'getNext', {q_id=q_id});
-//
-//        writeDump(next_q_id);
-
     }
 
     /*
-    start the survey
-    */
+     *@method actionStart()
+     *@description - initializes the survey question ID and loads the data for the last answered question
+     */
     public function actionStart() {
         /* output structure */
         var output = StructNew();
@@ -269,16 +293,6 @@ component Survey
         query the database and get a list of all question
         entity_ids that are associated with the current survey id.
         */
-
-        /*
-        var q = super.getQuery('SELECT t1.q_id ' &
-        ' FROM survey_question_table as t1' &
-        ' WHERE t1.s_id= :s_code_id');
-
-
-        q.addParam(name = 's_code_id', value = s_code_id, CFSQLTYPE = "CF_SQL_INT");
-        */
-
         var q = super.getQuery('SELECT t1.q_id ' &
         ' FROM survey_question_table as t1' &
         ' WHERE t1.s_id= :s_id');
@@ -329,9 +343,9 @@ component Survey
             } else {
 
                 output['statusCode'] = 200;
-                output['type'] = 'message';
+                output['type'] = 'info';
                 output['data'] = structNew();
-                output['message'] = "no records found";
+                output['info'] = "no records found";
             }
 
             /*add the list of question keys to the data */
@@ -368,7 +382,6 @@ component Survey
             output['data'] = invoke('survey', 'getQuestionData', {q_id=q_id});
 
             writeoutput(serializeJSON(output));
-            //writeoutput(serializeJSON(invoke('survey', 'getQuestionData', {q_id=q_id})));
         }
     }
 
@@ -401,6 +414,10 @@ component Survey
         }
     }
 
+    /*@method getLast
+     *@description - Loads the question ID of the last answered question in the survey based on survey code.
+     *@return integer ID - returns a question ID as integer.
+     */
     public function getLast() {
         /* get the session object */
         var sess = super.getSession();
@@ -420,7 +437,6 @@ component Survey
 
             result = q.execute().getResult();
 
-
             var q_id = result['last'][1];
 
             return q_id;
@@ -428,16 +444,15 @@ component Survey
     }
 
 
+    /*
+     *@method getQuestion()
+     *@description - Get the question data from the database and return a result object.
+     *@param integer q_id - question id.
+     *@return Object - returns a result object on success or false on failure.
+     */
     public function getQuestion(q_id) {
 
         if(isNumeric(q_id) && q_id != 0) {
-
-
-            /*
-            //var q = super.getQuery('SELECT * FROM question_table WHERE entity_id = :q_id');
-            var q = super.getQuery('SELECT t1.*, t2.[type], t3.[type] as data_type FROM question_table as t1, question_type as t2, answer_type as t3
-                                    WHERE t1.entity_id = :q_id AND t1.q_type = t2.entity_id and t1.a_type = t3.entity_id');
-            */
 
             var q = super.getQuery('SELECT t1.*, t2.[type], t3.[type] as data_type
                                     FROM question_table as t1 inner join question_type as t2 on t1.q_type = t2.entity_id left join answer_type as t3
@@ -451,6 +466,8 @@ component Survey
             if (result.recordcount > 0) {
 
                 return result;
+            } else {
+                return false;
             }
         }
     }
@@ -480,6 +497,12 @@ component Survey
         return result;
     }
 
+    /*
+     *@method getOptions()
+     *@description - get the answer options for a question with the supplied ID.
+     *@param integer q_id - Question ID as integer.
+     *@return Object - returns query result object.
+     */
     public function getOptions(q_id) {
 
         var q = super.getQuery('SELECT t1.* FROM option_table as t1, question_options_table as t2
@@ -561,6 +584,11 @@ component Survey
 	    
 	}
 
+    /*
+     *@method actionSave()
+     *@description - If the question ID is not in the database, a new record will be created with the supplied
+     *data. If the question with the supplied id exists, the record will be updated.
+     */
     function actionSave() {
         /*sucess flag */
         var valid = true;
@@ -697,14 +725,14 @@ component Survey
                     }
 
                     output['statusCode'] = 200;
-                    output['type'] = 'message';
-                    output['message'] = 'Answer Saved Successfully';
+                    output['type'] = 'success';
+                    output['success'] = 'Answer Saved Successfully';
 
                 } catch(any exception) {
 
                     output['statusCode'] = 500;
                     output['type'] = 'error';
-                    output['message'] = exception.message;
+                    output['error'] = exception.message;
 
                     valid = false;
                 }
@@ -712,12 +740,17 @@ component Survey
         } else {
             /* Invalid answer supplied */
             output['statusCode'] = 500;
-            output['message'] = "Invalid Questions ID Supplied";
+            output['type'] = 'error';
+            output['error'] = "Invalid Questions ID Supplied";
         }
 
         writeoutput(serializeJSON(output));
     }
 
+    /*
+     *@method actionSkip()
+     *@description - event handler for the questionskip action. Skips the question with the supplied ID.
+     */
     public function actionSkip() {
 
         /* get the request object */
@@ -763,12 +796,14 @@ component Survey
                     var result = q.execute();
 
                     output['statusCode'] = 200;
-                    output['message'] = "Answer Record Successfully Updated";
+                    output['success'] = "Answer Record Successfully Updated";
+                    outout['type'] = 'success';
 
                 } catch(any exception) {
 
                     output['statusCode'] = 500;
-                    output['message'] = exception.message;
+                    output['type'] = 'error';
+                    output['error'] = exception.message;
 
                 }
                 writeoutput(serializeJSON(output));
@@ -776,7 +811,8 @@ component Survey
 
                 var output = StructNew();
                 output['statusCode'] = 200;
-                output['message'] = "Answer Record Already Exists, Skipping";
+                outout['type'] = 'success';
+                output['success'] = "Answer Record Already Exists, Skipping";
 
                 writeoutput(serializeJSON(output));
             }
@@ -785,7 +821,8 @@ component Survey
             var output = StructNew();
 
             output['statusCode'] = 500;
-            output['message'] = "Invalid Question ID Supplied";
+            output['type'] = 'error';
+            output['error'] = "Invalid Question ID Supplied";
 
             writeoutput(serializeJSON(output));
         }
