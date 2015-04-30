@@ -1,10 +1,18 @@
 <cfscript>
 
+/*
+*@component Account
+*@extends _base_route
+*@description Account routes object that handles account related actions by the user.
+*/
 component Account
 	output="false"
 	extends="_base_route"
 	{
-         
+
+    /*@method actionIndex()
+     *@description default action for the account route.
+     */
     function actionIndex() {
 
         //writedump('account-index');
@@ -22,10 +30,10 @@ component Account
     }
 	
 	/*
-	 *@method: actionLogin() - queries the database and validates users
+	 *@method: actionLogin() -
+	 *@description - queries the database and validates users
 	 *survey code.
-	 */ 
-        
+	 */
     function actionLogin() {
 
         var output = StructNew();
@@ -81,10 +89,6 @@ component Account
 
                 output['JSESSIONID'] = sess.Id;
 
-                /* redirect to the survey index page */
-                //location('/survey');
-                //sexit;
-
             } else {
 		    
                 /*
@@ -117,24 +121,23 @@ component Account
 
 
 
+    /*
+     *@method actionLogout()
+     *@description - unsets the user data from the session.
+     */
 	function actionLogout() {
         /* get the session object */
         var sess = super.getSession();
 
         //set the valid flag to false.
 
-        sess.putValue('valid', true);
+        sess.putValue('valid', false);
         sess.putValue('s_code_id', "");
         sess.putValue('s_code', "");
         sess.putValue('s_id', "");
 
         var output = StructNew();
-
-        /*
-        output['statucCode'] = 200;
-        output['type'] = 'message';
-        output['message'] = "Logout Successfull";
-    */
+        
         output['statusCode'] = 302;
         output['type'] = 'redirect';
         outout['message'] = 'Log Out Successful';
